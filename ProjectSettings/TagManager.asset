@@ -5,8 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - New tag
-  - New tag (1)
   - node
+  - essence
   layers:
   - Default
   - TransparentFX
