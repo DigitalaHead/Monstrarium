@@ -45,14 +45,12 @@ public class PlayerController : MonoBehaviour
             Essence essence = essencePickup.GetEssence();
             if (essenceManager != null)
             {
-                essenceManager.CollectEssence(essence);
-                Debug.Log("Essence collected: " + essence.color);
+                essenceManager.CollectEssence(essence, other.gameObject);
             }
             else
             {
                 Debug.LogError("EssenceManager is not assigned in the inspector!");
             }
-            Destroy(other.gameObject);
         }
     }
 }

@@ -4,13 +4,16 @@ public enum EssenceColor
 {
     Red,
     Yellow,
-    Blue
+    Blue,
+    Orange,
+    Green,  
+    Purple
 }
 
 [System.Serializable]
 public class Essence 
 {
     public EssenceColor color;
-    public int amount;
+
 }
 

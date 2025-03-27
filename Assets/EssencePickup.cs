@@ -8,6 +8,6 @@ public class EssencePickup : MonoBehaviour
 
     public Essence GetEssence()
     {
-        return new Essence { color = essenceColor, amount = 1 }; // Возвращаем эссенцию с цветом
+        return new Essence { color = essenceColor }; // Возвращаем эссенцию с цветом
     }
 }
