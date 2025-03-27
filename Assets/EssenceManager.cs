@@ -3,11 +3,18 @@ using System.Collections.Generic;
 
 public class EssenceManager : MonoBehaviour
 {
-    private int redEssenceCount = 0;
-    private int yellowEssenceCount = 0;
-    private int blueEssenceCount = 0;
-    
+    public int redEssenceCount  { get; private set; }
+    public int yellowEssenceCount { get; private set; }
+    public int blueEssenceCount { get; private set; }
 
+    public int purpleEssenceCount { get; private set; }
+
+    public int greenEssenceCount { get; private set; }
+
+    public int orangeEssenceCount { get; private set; }
+    
+    public delegate void EssenceChanged();
+    public event EssenceChanged OnEssenceChanged;
     public void CollectEssence(Essence essence, GameObject obj)
     {
         switch (essence.color)
@@ -49,6 +56,7 @@ public class EssenceManager : MonoBehaviour
                 }
                 break;
         }
+        OnEssenceChanged?.Invoke();
         CheckForColorCombination();
     }
 
@@ -77,6 +85,7 @@ public class EssenceManager : MonoBehaviour
             blueEssenceCount -= 1;
             redEssenceCount -= 1;
         }
+        OnEssenceChanged?.Invoke();
     }
 
     private void CreateNewEssence(EssenceColor newColor)

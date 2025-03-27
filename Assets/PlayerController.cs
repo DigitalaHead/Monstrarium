@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
     MovementController movementController;
 
     [SerializeField]
-    private EssenceManager essenceManager;
+    public EssenceManager essenceManager {get; private set;}
 
     // Start is called before the first frame update
     void Start()
