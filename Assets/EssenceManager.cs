@@ -15,7 +15,7 @@ public class EssenceManager : MonoBehaviour
             case EssenceColor.Red:
                 if (redEssenceCount == 0) // Проверка на наличие красной эссенции
                 {
-                    Debug.Log("Essence collected: " + essence.color);
+                    Debug.Log("Собрана эссенция: " + essence.color);
                     redEssenceCount += 1;
                     Destroy(obj);
                 }
@@ -27,7 +27,7 @@ public class EssenceManager : MonoBehaviour
             case EssenceColor.Yellow:
                 if (yellowEssenceCount == 0) // Проверка на наличие желтой эссенции
                 {
-                    Debug.Log("Essence collected: " + essence.color);
+                    Debug.Log("Собрана эссенция: " + essence.color);
                     yellowEssenceCount += 1;
                     Destroy(obj);
                 }
@@ -39,7 +39,7 @@ public class EssenceManager : MonoBehaviour
             case EssenceColor.Blue:
                 if (blueEssenceCount == 0) // Проверка на наличие синей эссенции
                 {
-                    Debug.Log("Essence collected: " + essence.color);
+                    Debug.Log("Собрана эссенция: " + essence.color);
                     blueEssenceCount += 1;
                     Destroy(obj);
                 }
