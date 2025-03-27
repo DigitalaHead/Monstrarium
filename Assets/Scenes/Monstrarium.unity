@@ -20632,6 +20632,7 @@ GameObject:
   - component: {fileID: 314588682}
   - component: {fileID: 314588681}
   - component: {fileID: 314588680}
+  - component: {fileID: 314588683}
   m_Layer: 0
   m_Name: essence
   m_TagString: essence
@@ -20781,6 +20782,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &314588683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 314588678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 691f25d3aff8e1743a06e84f65257e6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  essenceColor: 2
 --- !u!1 &314662742
 GameObject:
   m_ObjectHideFlags: 0
@@ -21092,6 +21106,7 @@ GameObject:
   - component: {fileID: 317480853}
   - component: {fileID: 317480854}
   - component: {fileID: 317480855}
+  - component: {fileID: 317480856}
   m_Layer: 0
   m_Name: essence
   m_TagString: essence
@@ -21241,6 +21256,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &317480856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317480851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 691f25d3aff8e1743a06e84f65257e6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  essenceColor: 0
 --- !u!1 &318608811
 GameObject:
   m_ObjectHideFlags: 0
@@ -24133,6 +24161,7 @@ GameObject:
   - component: {fileID: 359257992}
   - component: {fileID: 359257991}
   - component: {fileID: 359257990}
+  - component: {fileID: 359257993}
   m_Layer: 0
   m_Name: essence (1)
   m_TagString: essence
@@ -24282,6 +24311,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &359257993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 359257988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 691f25d3aff8e1743a06e84f65257e6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  essenceColor: 0
 --- !u!1 &364104705
 GameObject:
   m_ObjectHideFlags: 0
@@ -39054,6 +39096,7 @@ GameObject:
   - component: {fileID: 575118748}
   - component: {fileID: 575118747}
   - component: {fileID: 575118746}
+  - component: {fileID: 575118749}
   m_Layer: 0
   m_Name: essence (1)
   m_TagString: essence
@@ -39203,6 +39246,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &575118749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 575118744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 691f25d3aff8e1743a06e84f65257e6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  essenceColor: 2
 --- !u!1 &575170128
 GameObject:
   m_ObjectHideFlags: 0
@@ -60047,6 +60103,7 @@ GameObject:
   - component: {fileID: 874102093}
   - component: {fileID: 874102092}
   - component: {fileID: 874102091}
+  - component: {fileID: 874102094}
   m_Layer: 0
   m_Name: essence (1)
   m_TagString: essence
@@ -60196,6 +60253,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &874102094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 874102089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 691f25d3aff8e1743a06e84f65257e6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  essenceColor: 1
 --- !u!1 &874536051
 GameObject:
   m_ObjectHideFlags: 0
@@ -79019,6 +79089,7 @@ GameObject:
   - component: {fileID: 1140573578}
   - component: {fileID: 1140573580}
   - component: {fileID: 1140573581}
+  - component: {fileID: 1140573582}
   m_Layer: 0
   m_Name: GG2_0
   m_TagString: Untagged
@@ -79135,6 +79206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 186244432994e52428be1e03023c7a86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  essenceManager: {fileID: 0}
 --- !u!50 &1140573580
 Rigidbody2D:
   serializedVersion: 4
@@ -79208,6 +79280,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4.22, y: 5.62}
   m_EdgeRadius: 0
+--- !u!114 &1140573582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140573574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539a2c2639d11234292d90749f5447a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1142157960
 GameObject:
   m_ObjectHideFlags: 0
@@ -112777,6 +112861,7 @@ GameObject:
   - component: {fileID: 1600062959}
   - component: {fileID: 1600062961}
   - component: {fileID: 1600062960}
+  - component: {fileID: 1600062962}
   m_Layer: 0
   m_Name: essence
   m_TagString: essence
@@ -112926,6 +113011,19 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.49, y: 0.5}
   m_EdgeRadius: 0
+--- !u!114 &1600062962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600062957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 691f25d3aff8e1743a06e84f65257e6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  essenceColor: 1
 --- !u!1 &1601342008
 GameObject:
   m_ObjectHideFlags: 0
