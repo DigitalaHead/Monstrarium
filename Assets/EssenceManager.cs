@@ -3,94 +3,80 @@ using System.Collections.Generic;
 
 public class EssenceManager : MonoBehaviour
 {
-    public int redEssenceCount  { get; private set; }
-    public int yellowEssenceCount { get; private set; }
-    public int blueEssenceCount { get; private set; }
+    private Dictionary<EssenceColor, int> essenceCounts = new Dictionary<EssenceColor, int>
+    {
+        { EssenceColor.Red, 0 },
+        { EssenceColor.Yellow, 0 },
+        { EssenceColor.Blue, 0 },
+        { EssenceColor.Purple, 0 },
+        { EssenceColor.Green, 0 },
+        { EssenceColor.Orange, 0 }
+    };
 
-    public int purpleEssenceCount { get; private set; }
-
-    public int greenEssenceCount { get; private set; }
-
-    public int orangeEssenceCount { get; private set; }
-    
     public delegate void EssenceChanged();
     public event EssenceChanged OnEssenceChanged;
+
     public void CollectEssence(Essence essence, GameObject obj)
     {
-        switch (essence.color)
+        if (essenceCounts[essence.color] == 0) // Проверка на наличие эссенции данного цвета
         {
-            case EssenceColor.Red:
-                if (redEssenceCount == 0) // Проверка на наличие красной эссенции
-                {
-                    Debug.Log("Собрана эссенция: " + essence.color);
-                    redEssenceCount += 1;
-                    Destroy(obj);
-                }
-                else
-                {
-                    Debug.Log("Уже есть красная эссенция, не собираем.");
-                }
-                break;
-            case EssenceColor.Yellow:
-                if (yellowEssenceCount == 0) // Проверка на наличие желтой эссенции
-                {
-                    Debug.Log("Собрана эссенция: " + essence.color);
-                    yellowEssenceCount += 1;
-                    Destroy(obj);
-                }
-                else
-                {
-                    Debug.Log("Уже есть желтая эссенция, не собираем.");
-                }
-                break;
-            case EssenceColor.Blue:
-                if (blueEssenceCount == 0) // Проверка на наличие синей эссенции
-                {
-                    Debug.Log("Собрана эссенция: " + essence.color);
-                    blueEssenceCount += 1;
-                    Destroy(obj);
-                }
-                else
-                {
-                    Debug.Log("Уже есть синяя эссенция, не собираем.");
-                }
-                break;
+            Debug.Log("Собрана эссенция: " + essence.color);
+            essenceCounts[essence.color] += 1;
+            ScoreController.score += 10;
+            Destroy(obj);
         }
+        else
+        {
+            Debug.Log("Уже есть эссенция цвета " + essence.color + ", не собираем.");
+        }
+
         OnEssenceChanged?.Invoke();
         CheckForColorCombination();
+    }
+
+    public int GetEssenceCount(EssenceColor color)
+    {
+        if (essenceCounts.TryGetValue(color, out int count))
+        {
+            return count;
+        }
+        return 0; // Возвращаем 0, если цвет не найден
     }
 
     private void CheckForColorCombination()
     {
         // Пример: смешивание двух красных и одной желтой дает оранжевую
-        if (redEssenceCount == 1 && yellowEssenceCount == 1)
+        if (essenceCounts[EssenceColor.Red] >= 1 && essenceCounts[EssenceColor.Yellow] >= 1)
         {
             CreateNewEssence(EssenceColor.Orange);
-            redEssenceCount -= 1;
-            yellowEssenceCount -= 1;
+            essenceCounts[EssenceColor.Red] -= 1;
+            essenceCounts[EssenceColor.Yellow] -= 1;
         }
 
         // Пример: смешивание двух желтых и одной синей дает зеленую
-        if (yellowEssenceCount == 1 && blueEssenceCount == 1)
+        if (essenceCounts[EssenceColor.Yellow] >= 1 && essenceCounts[EssenceColor.Blue] >= 1)
         {
             CreateNewEssence(EssenceColor.Green);
-            yellowEssenceCount -= 1;
-            blueEssenceCount -= 1;
+            essenceCounts[EssenceColor.Yellow] -= 1;
+            essenceCounts[EssenceColor.Blue] -= 1;
         }
 
         // Пример: смешивание двух синих и одной красной дает фиолетовую
-        if (blueEssenceCount == 1 && redEssenceCount == 1)
+        if (essenceCounts[EssenceColor.Blue] >= 1 && essenceCounts[EssenceColor.Red] >= 1)
         {
             CreateNewEssence(EssenceColor.Purple);
-            blueEssenceCount -= 1;
-            redEssenceCount -= 1;
+            essenceCounts[EssenceColor.Blue] -= 1;
+            essenceCounts[EssenceColor.Red] -= 1;
         }
+
         OnEssenceChanged?.Invoke();
     }
 
     private void CreateNewEssence(EssenceColor newColor)
     {
-        Debug.Log("Создана новая эссенция цвета: " + newColor);
+        Debug.Log("Создано зелье: " + newColor);
+        essenceCounts[newColor] += 1;
+        OnEssenceChanged?.Invoke();
         // Здесь можно добавить логику для создания новой эссенции в игре
     }
 }
