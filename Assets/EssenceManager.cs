@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class EssenceManager : MonoBehaviour
 {
@@ -18,18 +19,24 @@ public class EssenceManager : MonoBehaviour
 
     public void CollectEssence(Essence essence, GameObject obj)
     {
-        if (essenceCounts[essence.color] == 0) // Проверка на наличие эссенции данного цвета
-        {
-            Debug.Log("Собрана эссенция: " + essence.color);
-            essenceCounts[essence.color] += 1;
-            ScoreController.score += 10;
-            Destroy(obj);
+        if (essenceCounts.Values.Sum() <= 1 && essenceCounts[EssenceColor.Green] == 0 
+            && essenceCounts[EssenceColor.Purple] == 0 && essenceCounts[EssenceColor.Orange] == 0)
+            {
+            if (essenceCounts[essence.color] == 0) // Проверка на наличие эссенции данного цвета
+            {
+                Debug.Log("Собрана эссенция: " + essence.color);
+                essenceCounts[essence.color] += 1;
+                ScoreController.score += 10;
+                Destroy(obj);
+            }
+            else
+            {
+                Debug.Log("Уже есть эссенция цвета " + essence.color + ", не собираем.");
+            }
         }
-        else
-        {
-            Debug.Log("Уже есть эссенция цвета " + essence.color + ", не собираем.");
+        else {
+            Debug.Log("У вас уже много эссенций");
         }
-
         OnEssenceChanged?.Invoke();
         CheckForColorCombination();
     }

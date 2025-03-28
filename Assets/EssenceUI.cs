@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class EssenceUI : MonoBehaviour
 {
@@ -45,6 +46,7 @@ public class EssenceUI : MonoBehaviour
         essenceTextFields[EssenceColor.Yellow] = yellowCount;
         essenceTextFields[EssenceColor.Blue] = blueCount;
         essenceTextFields[EssenceColor.Green] = greenCount;
+
         essenceTextFields[EssenceColor.Orange] = orangeCount;
         essenceTextFields[EssenceColor.Purple] = purpleCount;
     }
