@@ -48,4 +48,6 @@ public class MovementController : MonoBehaviour
     {
         direction = newDirection;
     }
+
+    
 }
