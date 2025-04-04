@@ -39,12 +39,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        EssencePickup essencePickup = other.GetComponent<EssencePickup>();
+        EssenceController essencePickup = other.GetComponent<EssenceController>();
         if (essencePickup != null)
         {
-            Essence essence = essencePickup.GetEssence();
+            Essence essence = essencePickup.CreateEssence();
             if (essenceManager != null)
-            {
+            {                
                 essenceManager.CollectEssence(essence, other.gameObject);
             }
             else

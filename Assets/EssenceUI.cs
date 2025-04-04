@@ -20,6 +20,7 @@ public class EssenceUI : MonoBehaviour
     // Словарь для хранения текстовых полей по цветам эссенций
     private Dictionary<EssenceColor, TextMeshProUGUI> essenceTextFields = new Dictionary<EssenceColor, TextMeshProUGUI>();
 
+
     private void Start()
     {
         essenceManager = FindFirstObjectByType<EssenceManager>();
@@ -41,7 +42,7 @@ public class EssenceUI : MonoBehaviour
 
     private void InitializeTextFields()
     {
-        // Здесь вы можете добавить все текстовые поля в словарь
+
         essenceTextFields[EssenceColor.Red] = redCount;
         essenceTextFields[EssenceColor.Yellow] = yellowCount;
         essenceTextFields[EssenceColor.Blue] = blueCount;
