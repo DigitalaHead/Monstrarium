@@ -24,7 +24,18 @@ public class MovementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (currentNode == null)
+        {
+            Debug.LogError("currentNode не назначен в MovementController.");
+            return;
+        }
+
         NodeController currentNodeController = currentNode.GetComponent<NodeController>();
+        if (currentNodeController == null)
+        {
+            Debug.LogError("NodeController не найден на объекте currentNode.");
+            return;
+        }
 
         transform.position = Vector2.MoveTowards(transform.position, currentNode.transform.position, speed * Time.deltaTime);
         bool reverseDirection = false;
@@ -38,7 +49,6 @@ public class MovementController : MonoBehaviour
         {
             reverseDirection = true;
         }
-
 
         if ((transform.position.x == currentNode.transform.position.x && transform.position.y == currentNode.transform.position.y) || reverseDirection)
         {
@@ -55,8 +65,6 @@ public class MovementController : MonoBehaviour
                 transform.position = currentNode.transform.position;
                 canWarp = false;
             }
-
-            // If we reached the center of the right warp, warp to left warp
             else if (currentNodeController.isWarpRightNode && canWarp)
             {
                 currentNode = gameManager.leftWarpNode;
@@ -65,12 +73,10 @@ public class MovementController : MonoBehaviour
                 transform.position = currentNode.transform.position;
                 canWarp = false;
             }
-            
             else
             {
-
-                if(currentNodeController.isGhostStartingNode && direction == "down"
-                    && (!isGhost || GetComponent<EnemyController>().ghostNodeState != EnemyController.GhostNodeStatesEnum.respawning))  
+                if (currentNodeController.isGhostStartingNode && direction == "down"
+                    && (!isGhost || GetComponent<EnemyController>().ghostNodeState != EnemyController.GhostNodeStatesEnum.respawning))
                 {
                     direction = lastMovingDirection;
                 }
@@ -90,7 +96,6 @@ public class MovementController : MonoBehaviour
                         currentNode = newNode;
                     }
                 }
-            
             }
         }
         else

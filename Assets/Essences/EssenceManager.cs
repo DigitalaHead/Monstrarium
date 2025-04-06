@@ -4,6 +4,8 @@ using System.Linq;
 
 public class EssenceManager : MonoBehaviour
 {
+    public delegate void EssenceChanged();
+
     private Dictionary<EssenceColor, int> essenceCounts = new Dictionary<EssenceColor, int>
     {
         { EssenceColor.Red, 0 },
@@ -14,7 +16,6 @@ public class EssenceManager : MonoBehaviour
         { EssenceColor.Orange, 0 }
     };
 
-    public delegate void EssenceChanged();
     public event EssenceChanged OnEssenceChanged;
 
     private EssenceSpawner essenceSpawner;
@@ -26,19 +27,46 @@ public class EssenceManager : MonoBehaviour
 
     public void CollectEssence(Essence essence, GameObject obj)
     {
-        // Проверяем, есть ли у игрока уже оранжевая, зеленая или фиолетовая эссенция
-        if (essenceCounts[EssenceColor.Orange] > 0 || 
+        GameManager gameManager = FindFirstObjectByType<GameManager>();
+
+        // Проверяем, есть ли у игрока сложная эссенция (фиолетовая, зелёная или оранжевая)
+        if (essenceCounts[EssenceColor.Purple] > 0 || 
             essenceCounts[EssenceColor.Green] > 0 || 
-            essenceCounts[EssenceColor.Purple] > 0)
+            essenceCounts[EssenceColor.Orange] > 0)
         {
-            Debug.Log("Инвентарь заполнен");
+            Debug.Log("У вас уже есть сложная эссенция. Нельзя собрать больше.");
+            if (gameManager != null)
+            {
+                gameManager.loserWindowByIncorrectEssence.SetActive(true); // Показываем окно поражения из-за неправильной эссенции
+                Time.timeScale = 0; // Останавливаем время
+            }
+            return;
+        }
+
+        // Считаем количество базовых эссенций (красная, синяя, жёлтая)
+        int basicEssenceCount = essenceCounts[EssenceColor.Red] +
+                                essenceCounts[EssenceColor.Yellow] +
+                                essenceCounts[EssenceColor.Blue];
+
+        // Если у игрока уже две базовые эссенции, нельзя собрать больше
+        if (basicEssenceCount >= 2 && 
+            (essence.color == EssenceColor.Red || 
+             essence.color == EssenceColor.Yellow || 
+             essence.color == EssenceColor.Blue))
+        {
+            Debug.Log("У вас уже есть две базовые эссенции. Нельзя собрать больше.");
             return;
         }
 
         // Проверяем, есть ли у игрока уже эссенция этого цвета
         if (essenceCounts.TryGetValue(essence.color, out int count) && count > 0)
         {
-            Debug.Log($"У вас уже есть эссенция цвета {essence.color}");
+            Debug.Log($"У вас уже есть эссенция цвета {essence.color}. Нельзя собрать одинаковые эссенции.");
+            if (gameManager != null)
+            {
+                gameManager.loserWindowByIncorrectEssence.SetActive(true); // Показываем окно поражения из-за неправильной эссенции
+                Time.timeScale = 0; // Останавливаем время
+            }
             return;
         }
 
@@ -57,10 +85,26 @@ public class EssenceManager : MonoBehaviour
             Debug.LogWarning("EssenceSpawner не найден или был уничтожен.");
         }
 
+        // Вызываем событие обновления UI
         OnEssenceChanged?.Invoke();
 
         // Проверяем возможность создания комбинации
         CheckForColorCombination();
+    }
+
+    public bool UseOrangeEssence()
+    {
+        if (essenceCounts[EssenceColor.Orange] > 0)
+        {
+            essenceCounts[EssenceColor.Orange]--;
+            Debug.Log($"Оранжевое зелье использовано.");
+            OnEssenceChanged?.Invoke();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public int GetEssenceCount(EssenceColor color) => essenceCounts.TryGetValue(color, out int count) ? count : 0;

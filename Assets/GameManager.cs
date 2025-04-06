@@ -15,8 +15,11 @@ public class GameManager : MonoBehaviour
     public GameObject ghostNodeStart;
     public GameObject ghostNodeCenter;
 
-    public GameObject loserWindowOne;
-    public GameObject loserWindowTwo;
+    public GameObject loserWindowByIncorrectEssence; // Окно поражения из-за неправильной эссенции
+    public GameObject loserWindowByMonster; // Окно поражения от монстра
+    public GameObject winnerWindow; // Окно победы
+
+    public GameObject menu; // Главное меню
 
     // Метод для перезапуска текущего уровня
     public void Restart()
@@ -26,33 +29,55 @@ public class GameManager : MonoBehaviour
     }
 
     // Метод для выхода в главное меню
-    public void Exit()
+    public void ExitMenu()
     {
-        // Проверяем, добавлена ли сцена в Build Settings
-        if (Application.CanStreamedLevelBeLoaded("menu"))
+        // Проверяем, добавлена ли сцена "menu" в Build Settings
+        if (Application.CanStreamedLevelBeLoaded("Menu"))
         {
-            SceneManager.LoadScene("menu"); // Загружаем сцену "menu"
+            Debug.Log("Перемещение в главное меню.");
+            SceneManager.LoadScene("Menu"); // Загружаем сцену "menu"
         }
         else
         {
-            Debug.Log("Сцена 'menu' не добавлена в Build Settings. Проверьте настройки сборки.");
+            Debug.LogError("Сцена 'Menu' не добавлена в Build Settings. Проверьте настройки сборки.");
         }
     }
 
-    public void ShowGameOverMenu()
+    public void ShowGameOverMenu(bool playerWins)
     {
-        if (loserWindowTwo != null)
+        if (playerWins)
         {
-            loserWindowTwo.SetActive(true); // Активируем окно поражения
-            Time.timeScale = 0; // Останавливаем время в игре
+            Debug.Log("Игрок победил красного монстра!");
+
+            if (winnerWindow != null)
+            {
+                winnerWindow.SetActive(true); // Активируем окно победы
+                Time.timeScale = 0; // Останавливаем время в игре
+            }
+            else
+            {
+                Debug.LogWarning("Окно победы не назначено в инспекторе!");
+            }
+        }
+        else
+        {
+            if (loserWindowByMonster != null)
+            {
+                loserWindowByMonster.SetActive(true); // Активируем окно поражения
+                Time.timeScale = 0; // Останавливаем время в игре
+            }
+            else
+            {
+                Debug.LogWarning("Окно поражения не назначено в инспекторе!");
+            }
         }
     }
 
     public void HideGameOverMenu()
     {
-        if (loserWindowTwo != null)
+        if (loserWindowByMonster != null)
         {
-            loserWindowTwo.SetActive(false); // Скрываем окно поражения
+            loserWindowByMonster.SetActive(false); // Скрываем окно поражения
             Time.timeScale = 1; // Возобновляем время
         }
     }

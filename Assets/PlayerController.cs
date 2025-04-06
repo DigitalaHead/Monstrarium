@@ -43,15 +43,10 @@ public class PlayerController : MonoBehaviour
         EssenceController essence = collision.GetComponent<EssenceController>();
         if (essence != null)
         {
-            EssenceSpawner spawner = FindFirstObjectByType<EssenceSpawner>();
-            if (spawner != null)
+            EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
+            if (essenceManager != null)
             {
-                spawner.DestroyAndSpawnEssence(collision.gameObject); // Удаляем и спауним новую эссенцию
-            }
-            else
-            {
-                Debug.LogWarning("EssenceSpawner не найден!");
-                Destroy(collision.gameObject); // Удаляем эссенцию, если спаунер не найден
+                essenceManager.CollectEssence(essence.CreateEssence(), collision.gameObject);
             }
         }
     }

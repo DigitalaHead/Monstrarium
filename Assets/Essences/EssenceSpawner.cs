@@ -68,6 +68,11 @@ public class EssenceSpawner : MonoBehaviour
         }
 
         Vector3 position = oldEssence.position;
+        Collider2D collider = oldEssence.GetComponent<Collider2D>();
+        if (collider != null)
+        {
+            collider.enabled = false; // Отключаем коллайдер
+        }
         Destroy(oldEssence.gameObject); // Удаляем старую эссенцию
         Instantiate(randomPrefab, position, Quaternion.identity, essencesParent); // Создаём новую
     }
@@ -82,8 +87,7 @@ public class EssenceSpawner : MonoBehaviour
             return;
         }
 
-        GameObject newEssence = Instantiate(essenceToSpawn, position, Quaternion.identity, essencesParent);
-        Debug.Log($"Создана новая эссенция: {newEssence.name}");
+        Instantiate(essenceToSpawn, position, Quaternion.identity, essencesParent);
     }
 
     // Удаляет старую эссенцию и запускает корутину для спауна новой
