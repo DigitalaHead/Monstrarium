@@ -5,15 +5,16 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     MovementController movementController;
-
-    [SerializeField]
-    public EssenceManager essenceManager {get; private set;}
-
     // Start is called before the first frame update
     void Start()
     {
         movementController = GetComponent<MovementController>();
-        essenceManager = FindFirstObjectByType<EssenceManager>(); // Находим объект EssenceManager в сцене
+    }
+
+    void Awake()
+    {
+        movementController = GetComponent<MovementController>();
+        movementController.lastMovingDirection = "right";
     }
 
     // Update is called once per frame
@@ -37,19 +38,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        EssenceController essencePickup = other.GetComponent<EssenceController>();
-        if (essencePickup != null)
+        EssenceController essence = collision.GetComponent<EssenceController>();
+        if (essence != null)
         {
-            Essence essence = essencePickup.CreateEssence();
-            if (essenceManager != null)
-            {                
-                essenceManager.CollectEssence(essence, other.gameObject);
+            EssenceSpawner spawner = FindFirstObjectByType<EssenceSpawner>();
+            if (spawner != null)
+            {
+                spawner.DestroyAndSpawnEssence(collision.gameObject); // Удаляем и спауним новую эссенцию
             }
             else
             {
-                Debug.LogError("EssenceManager is not assigned in the inspector!");
+                Debug.LogWarning("EssenceSpawner не найден!");
+                Destroy(collision.gameObject); // Удаляем эссенцию, если спаунер не найден
             }
         }
     }
