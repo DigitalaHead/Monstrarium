@@ -1,4 +1,4 @@
-    using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
@@ -15,9 +15,17 @@ public class NodeController : MonoBehaviour
     public GameObject nodeRight;
     public GameObject nodeUp;
     public GameObject nodeDown;
+
+    public bool isWarpRightNode = false;
+    public bool isWarpLeftNode = false;
+
+     public bool isGhostStartingNode = false;
+
+    public GameManager gameManager;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         RaycastHit2D[] hitsRight;
         hitsRight = Physics2D.RaycastAll(transform.position, Vector2.right);
 
@@ -70,6 +78,12 @@ public class NodeController : MonoBehaviour
             }
         }
 
+      if (isGhostStartingNode)
+       {
+            canMoveDown = true;
+            nodeDown = gameManager.ghostNodeCenter;
+       }  
+        
     }
 
     // Update is called once per frame

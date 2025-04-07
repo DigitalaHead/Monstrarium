@@ -5,15 +5,16 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     MovementController movementController;
-
-    [SerializeField]
-    public EssenceManager essenceManager {get; private set;}
-
     // Start is called before the first frame update
     void Start()
     {
         movementController = GetComponent<MovementController>();
-        essenceManager = FindFirstObjectByType<EssenceManager>(); // Находим объект EssenceManager в сцене
+    }
+
+    void Awake()
+    {
+        movementController = GetComponent<MovementController>();
+        movementController.lastMovingDirection = "right";
     }
 
     // Update is called once per frame
@@ -37,19 +38,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        EssencePickup essencePickup = other.GetComponent<EssencePickup>();
-        if (essencePickup != null)
+        EssenceController essence = collision.GetComponent<EssenceController>();
+        if (essence != null)
         {
-            Essence essence = essencePickup.GetEssence();
+            EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
             if (essenceManager != null)
             {
-                essenceManager.CollectEssence(essence, other.gameObject);
-            }
-            else
-            {
-                Debug.LogError("EssenceManager is not assigned in the inspector!");
+                essenceManager.CollectEssence(essence.CreateEssence(), collision.gameObject);
             }
         }
     }
