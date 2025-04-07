@@ -21,6 +21,7 @@ public class EssenceSpawner : MonoBehaviour
     // Инициализация эссенций на старте
     private void InitializeEssences()
     {
+        // Флаги для проверки наличия эссенций каждого цвета
         bool hasRed = false;
         bool hasYellow = false;
 
@@ -37,9 +38,6 @@ public class EssenceSpawner : MonoBehaviour
                 else if (essenceController.Color == EssenceColor.Yellow)
                     hasYellow = true;
             }
-
-            // Удаляем старую эссенцию и создаём новую
-            ReplaceEssence(child);
         }
 
         // Убедимся, что на карте есть хотя бы одна красная эссенция
@@ -120,7 +118,9 @@ public class EssenceSpawner : MonoBehaviour
             return null;
         }
 
-        return Random.Range(0f, 1f) < 0.5f ? redEssencePrefab : yellowEssencePrefab;
+        int randomIndex = Random.Range(0, 2);
+        if (randomIndex == 0) return redEssencePrefab;
+        return yellowEssencePrefab;
     }
 
     // Возвращает случайную позицию в пределах родительского объекта

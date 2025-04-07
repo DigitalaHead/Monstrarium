@@ -20,8 +20,6 @@ public class EnemyController : MonoBehaviour
     public GhostNodeStatesEnum ghostNodeState;
     public GhostNodeStatesEnum respawnState;
 
-    public EssenceManager essenceManager;
-
     public enum GhostType
     {
         red,
@@ -38,19 +36,11 @@ public class EnemyController : MonoBehaviour
     public GameObject ghostNodeCenter;
 
     public MovementController movementController;
-
     public GameObject startingNode;
 
     public bool readyToLeaveHome = false;
-
     public GameManager gameManager;
-
     public bool testRespawn = false;
-
-    void Start()
-    {
-        essenceManager = FindFirstObjectByType<EssenceManager>();
-    }
 
     void Awake()
     {
@@ -110,13 +100,11 @@ public class EnemyController : MonoBehaviour
         {
             string direction = "";
 
-            if (transform.position.x == ghostNodeStart.transform.position.x &&
-                transform.position.y == ghostNodeStart.transform.position.y)
+            if (transform.position == ghostNodeStart.transform.position)
             {
                 direction = "down";
             }
-            else if (transform.position.x == ghostNodeCenter.transform.position.x &&
-                     transform.position.y == ghostNodeCenter.transform.position.y)
+            else if (transform.position == ghostNodeCenter.transform.position)
             {
                 if (respawnState == GhostNodeStatesEnum.centerNode)
                 {
@@ -131,10 +119,7 @@ public class EnemyController : MonoBehaviour
                     direction = "right";
                 }
             }
-            else if ((transform.position.x == ghostNodeLeft.transform.position.x &&
-                      transform.position.y == ghostNodeLeft.transform.position.y) ||
-                     (transform.position.x == ghostNodeRight.transform.position.x &&
-                      transform.position.y == ghostNodeRight.transform.position.y))
+            else if (transform.position == ghostNodeLeft.transform.position || transform.position == ghostNodeRight.transform.position)
             {
                 ghostNodeState = respawnState;
             }
@@ -180,7 +165,7 @@ public class EnemyController : MonoBehaviour
 
     string GetClosestDirection(Vector2 target)
     {
-        float shortestDistance = 0;
+        float shortestDistance = float.MaxValue;
         string lastMovingDirection = movementController.lastMovingDirection;
         string newDirection = "";
 
@@ -191,7 +176,7 @@ public class EnemyController : MonoBehaviour
             GameObject nodeUp = nodeController.nodeUp;
             float distance = Vector2.Distance(nodeUp.transform.position, target);
 
-            if (distance < shortestDistance || shortestDistance == 0)
+            if (distance < shortestDistance)
             {
                 shortestDistance = distance;
                 newDirection = "up";
@@ -203,7 +188,7 @@ public class EnemyController : MonoBehaviour
             GameObject nodeDown = nodeController.nodeDown;
             float distance = Vector2.Distance(nodeDown.transform.position, target);
 
-            if (distance < shortestDistance || shortestDistance == 0)
+            if (distance < shortestDistance)
             {
                 shortestDistance = distance;
                 newDirection = "down";
@@ -215,7 +200,7 @@ public class EnemyController : MonoBehaviour
             GameObject nodeLeft = nodeController.nodeLeft;
             float distance = Vector2.Distance(nodeLeft.transform.position, target);
 
-            if (distance < shortestDistance || shortestDistance == 0)
+            if (distance < shortestDistance)
             {
                 shortestDistance = distance;
                 newDirection = "left";
@@ -227,7 +212,7 @@ public class EnemyController : MonoBehaviour
             GameObject nodeRight = nodeController.nodeRight;
             float distance = Vector2.Distance(nodeRight.transform.position, target);
 
-            if (distance < shortestDistance || shortestDistance == 0)
+            if (distance < shortestDistance)
             {
                 shortestDistance = distance;
                 newDirection = "right";
@@ -241,16 +226,37 @@ public class EnemyController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            FindFirstObjectByType<GameManager>().ShowGameOverMenu(essenceManager.UseOrangeEssence());
+            EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
+
+            if (essenceManager != null && essenceManager.UseOrangeEssence())
+            {
+                // Если у игрока есть оранжевая эссенция, монстр респавнится
+                readyToLeaveHome = false;
+                transform.position = ghostNodeCenter.transform.position;
+                movementController.currentNode = ghostNodeCenter;
+                ghostNodeState = GhostNodeStatesEnum.respawning;
+                StartCoroutine(RespawnGhost());
+            }
+            else
+            {
+                // Если у игрока нет оранжевой эссенции, игрок проигрывает
+                collision.gameObject.SetActive(false); // Отключаем объект игрока вместо уничтожения
+                if (gameManager.loserWindowByMonster != null)
+                {
+                    gameManager.loserWindowByMonster.SetActive(true); // Показываем окно поражения
+                }
+                else
+                {
+                    Debug.LogWarning("Окно поражения не назначено в инспекторе!");
+                }
+            }
         }
     }
 
-    IEnumerator RespawnGhost()
+    public IEnumerator RespawnGhost()
     {
         yield return new WaitForSeconds(2f);
-
-        GameObject respawnedGhost = Instantiate(gameObject, startingNode.transform.position, Quaternion.identity);
-        respawnedGhost.GetComponent<EnemyController>().ResetGhost();
+        readyToLeaveHome = true;
     }
 
     public void ResetGhost()

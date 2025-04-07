@@ -21,6 +21,13 @@ public class GameManager : MonoBehaviour
 
     public GameObject menu; // Главное меню
 
+    public EnemyController enemyController; // Ссылка на EnemyController
+
+    void Start()
+    {
+        enemyController = FindFirstObjectByType<EnemyController>(); // Находим EnemyController в сцене
+    }
+
     // Метод для перезапуска текущего уровня
     public void Restart()
     {
@@ -83,6 +90,40 @@ public class GameManager : MonoBehaviour
         player.transform.position = startPosition; // Перемещаем игрока
         player.GetComponent<Rigidbody2D>().velocity = Vector2.zero; // Сбрасываем скорость
         player.SetActive(true); // Убедитесь, что объект активен
+    }
+
+    public void ResetPlayer(GameObject player, Vector3 startPosition)
+    {
+        player.transform.position = startPosition;
+        player.SetActive(true); // Включаем объект игрока
+    }
+
+    public void ContinueGame()
+    {
+        // Скрываем окна победы и поражения
+        if (winnerWindow != null)
+        {
+            winnerWindow.SetActive(false);
+        }
+
+        // Возобновляем время
+        Time.timeScale = 1;
+
+        // Сбрасываем состояние всех монстров
+        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
+        foreach (var enemy in enemies)
+        {
+            if (enemy != null) // Проверяем, что объект не уничтожен
+            {
+                StartCoroutine(enemy.RespawnGhost()); // Запускаем респавн для каждого монстра
+            }
+            else
+            {
+                Debug.LogWarning("Попытка респавна уничтоженного монстра.");
+            }
+        }
+
+        Debug.Log("Игра продолжена, монстры сброшены.");
     }
 
     void Awake()
