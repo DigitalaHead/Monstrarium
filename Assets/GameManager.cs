@@ -31,16 +31,11 @@ public class GameManager : MonoBehaviour
     // Метод для выхода в главное меню
     public void ExitMenu()
     {
-        // Проверяем, добавлена ли сцена "menu" в Build Settings
-        if (Application.CanStreamedLevelBeLoaded("Menu"))
-        {
-            Debug.Log("Перемещение в главное меню.");
-            SceneManager.LoadScene("Menu"); // Загружаем сцену "menu"
-        }
-        else
-        {
-            Debug.LogError("Сцена 'Menu' не добавлена в Build Settings. Проверьте настройки сборки.");
-        }
+        if (menu!= null)
+            {
+                menu.SetActive(true); // Активируем окно победы
+                Time.timeScale = 0; // Останавливаем время в игре
+            }
     }
 
     public void ShowGameOverMenu(bool playerWins)
