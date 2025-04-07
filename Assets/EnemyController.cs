@@ -234,6 +234,9 @@ public class EnemyController : MonoBehaviour
                 readyToLeaveHome = false;
                 transform.position = ghostNodeCenter.transform.position;
                 movementController.currentNode = ghostNodeCenter;
+                movementController.lastMovingDirection = "down";
+                movementController.direction = "down";
+                //respawnState = GhostNodeStatesEnum.respawning;
                 ghostNodeState = GhostNodeStatesEnum.respawning;
                 StartCoroutine(RespawnGhost());
             }
