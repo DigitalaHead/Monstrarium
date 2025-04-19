@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Net.Cache;
 using System.Security.Cryptography;
 using UnityEngine;
 
@@ -10,6 +13,7 @@ public class EnemyController : MonoBehaviour
     public enum GhostNodeStatesEnum
     {
         respawning,
+        redGhost,
         leftNode,
         rightNode,
         centerNode,
@@ -20,15 +24,15 @@ public class EnemyController : MonoBehaviour
     public GhostNodeStatesEnum ghostNodeState;
     public GhostNodeStatesEnum respawnState;
 
-    public enum GhostType
+    public enum MonsterType
     {
-        red,
+        fireOrAqua,
         blue,
         pink,
         orange
     }
 
-    public GhostType ghostType;
+    public MonsterType monsterType;
 
     public GameObject ghostNodeLeft;
     public GameObject ghostNodeRight;
@@ -42,31 +46,38 @@ public class EnemyController : MonoBehaviour
     public GameManager gameManager;
     public bool testRespawn = false;
 
+    public bool isFrightened = false;
+
+    public GameObject[] scatterNodes;
+    public int scatterNodeIndex;
+
     void Awake()
     {
+        scatterNodeIndex = 0;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         movementController = GetComponent<MovementController>();
 
-        if (ghostType == GhostType.red)
+        if (monsterType == MonsterType.fireOrAqua)
         {
             ghostNodeState = GhostNodeStatesEnum.startNode;
             respawnState = GhostNodeStatesEnum.centerNode;
             startingNode = ghostNodeStart;
             readyToLeaveHome = true;
+            
         }
-        else if (ghostType == GhostType.pink)
+        else if (monsterType == MonsterType.pink)
         {
             ghostNodeState = GhostNodeStatesEnum.centerNode;
             startingNode = ghostNodeCenter;
             respawnState = GhostNodeStatesEnum.centerNode;
         }
-        else if (ghostType == GhostType.blue)
+        else if (monsterType == MonsterType.blue)
         {
             ghostNodeState = GhostNodeStatesEnum.leftNode;
             respawnState = GhostNodeStatesEnum.leftNode;
             startingNode = ghostNodeLeft;
         }
-        else if (ghostType == GhostType.orange)
+        else if (monsterType == MonsterType.orange)
         {
             ghostNodeState = GhostNodeStatesEnum.rightNode;
             respawnState = GhostNodeStatesEnum.rightNode;
@@ -89,12 +100,60 @@ public class EnemyController : MonoBehaviour
 
     public void ReachedCenterOfNode(NodeController nodeController)
     {
+        
         if (ghostNodeState == GhostNodeStatesEnum.movingInNodes)
         {
-            if (ghostType == GhostType.red)
+            //режим разброса для указания по нему точного маршрута
+            if (gameManager.currentGhostMode == GameManager.GhostMode.scatter)
             {
-                DetermineRedGhostDirection();
+
+                if(transform.position.x == scatterNodes[scatterNodeIndex].transform.position.x && transform.position.y == scatterNodes[scatterNodeIndex].transform.position.y)
+                {
+                    scatterNodeIndex++;
+
+                    if (scatterNodeIndex == scatterNodes.Length - 1)
+                    {
+                        scatterNodeIndex = 0;
+                    }
+                }
+
+                string direction = GetClosestDirection(scatterNodes[scatterNodeIndex].transform.position);
+                movementController.SetDirection(direction);
+               
             }
+
+            //режим неопределенности
+            else if (isFrightened)
+            {
+                string direction = GetRandomDirection();
+                movementController.SetDirection(direction);
+            }
+
+            // режим погони
+            else
+            {
+                if (monsterType == MonsterType.fireOrAqua)
+                {
+                    DetermineRedGhostDirection();
+                }
+
+                else if (monsterType == MonsterType.pink)
+                {
+                    DeterminePinkGhostDirection();
+                }
+
+                else if (monsterType == MonsterType.blue)
+                {
+                    DetermineBlueGhostDirection();
+                }
+
+                else if (monsterType == MonsterType.orange)
+                {
+                    DetermineOrangeGhostDirection();
+                }
+
+            }
+            
         }
         else if (ghostNodeState == GhostNodeStatesEnum.respawning)
         {
@@ -152,16 +211,102 @@ public class EnemyController : MonoBehaviour
                 else if (ghostNodeState == GhostNodeStatesEnum.startNode)
                 {
                     ghostNodeState = GhostNodeStatesEnum.movingInNodes;
+                    movementController.SetDirection("left");
                 }
             }
         }
     }
 
+    void DetermineOrangeGhostDirection()
+    {
+        float distance = Vector2.Distance(gameManager.pacman.transform.position, transform.position);
+        float distanceBetweenNodes = 0.17f;
+        if (distance < 0)
+        {
+            distance *= -1;
+        }
+
+        // If we are within 8 nodes of pacman, chase him using red's logic
+        if (distance <= distanceBetweenNodes * 10)
+        {
+            DetermineRedGhostDirection();
+        }
+        // Otherwise, use scatter mode logic
+        else
+        {
+            // Scatter mode
+            string direction = GetRandomDirection();
+            movementController.SetDirection(direction);
+        }
+    }
+
+    void DetermineBlueGhostDirection()
+    {
+        string playerDirection = gameManager.pacman.GetComponent<MovementController>().lastMovingDirection;
+        float distanceBetWeenNode = 0.17f;
+
+        Vector2 target = gameManager.pacman.transform.position;
+        if (playerDirection == "left")
+        {
+            target.x -= distanceBetWeenNode * 5;
+        }
+        else if (playerDirection == "right")
+        {
+            target.x += distanceBetWeenNode * 5;
+        }
+        else if (playerDirection == "up")
+        {
+            target.y += distanceBetWeenNode * 5;
+        }
+        else if (playerDirection == "down")
+        {
+            target.y -= distanceBetWeenNode * 5;
+        }
+
+        GameObject redGhost = gameManager.redGhost;
+        float xDistance = target.x - redGhost.transform.position.x;
+        float yDistance = target.y - redGhost.transform.position.y;
+
+        Vector2 blueTarget = new Vector2 (target.x + xDistance, target.y + yDistance);
+        string direction = GetClosestDirection (blueTarget);
+        movementController.SetDirection(direction);
+
+    }
+
+    void DeterminePinkGhostDirection()
+    {
+        string playerDirection = gameManager.pacman.GetComponent<MovementController>().lastMovingDirection;
+        float distanceBetWeenNode = 0.17f;
+
+        Vector2 target = gameManager.pacman.transform.position;
+        if (playerDirection == "left")
+        {
+            target.x -= distanceBetWeenNode * 5;
+        }
+        else if (playerDirection == "right") 
+        {
+            target.x += distanceBetWeenNode * 5;
+        }
+        else if (playerDirection == "up")
+        {
+            target.y += distanceBetWeenNode * 5;
+        }
+        else if (playerDirection == "down")
+        {
+            target.y -= distanceBetWeenNode * 5;
+        }
+        string direction = GetClosestDirection(target);
+        movementController.SetDirection(direction);
+    }
+
     void DetermineRedGhostDirection()
     {
+        // Определяем координаты игрока
         string direction = GetClosestDirection(gameManager.pacman.transform.position);
         movementController.SetDirection(direction);
     }
+
+
 
     string GetClosestDirection(Vector2 target)
     {
@@ -222,6 +367,34 @@ public class EnemyController : MonoBehaviour
         return newDirection;
     }
 
+    string GetRandomDirection()
+    {
+        List<string> possibleDirections = new List<string>();
+        NodeController nodeController = movementController.currentNode.GetComponent<NodeController>();
+
+        if (nodeController.canMoveDown && movementController.lastMovingDirection != "up")
+        {
+            possibleDirections.Add("down");
+        }
+        if (nodeController.canMoveUp && movementController.lastMovingDirection != "down")
+        {
+            possibleDirections.Add("up");
+        }
+        if (nodeController.canMoveRight && movementController.lastMovingDirection != "left")
+        {
+            possibleDirections.Add("right");
+        }
+        if (nodeController.canMoveLeft && movementController.lastMovingDirection != "right")
+        {
+            possibleDirections.Add("left");
+        }
+
+        string direction = "";
+        int randomDirectionIndex = UnityEngine.Random.Range(0, possibleDirections.Count);
+        direction = possibleDirections[randomDirectionIndex];
+        return direction;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
@@ -262,39 +435,5 @@ public class EnemyController : MonoBehaviour
         readyToLeaveHome = true;
     }
 
-    public void ResetGhost()
-    {
-        ghostNodeState = GhostNodeStatesEnum.respawning;
-        transform.position = startingNode.transform.position;
-        movementController.currentNode = startingNode;
-
-        if (ghostType == GhostType.red)
-        {
-            ghostNodeState = GhostNodeStatesEnum.startNode;
-            respawnState = GhostNodeStatesEnum.centerNode;
-            startingNode = ghostNodeStart;
-            readyToLeaveHome = true;
-        }
-        else if (ghostType == GhostType.pink)
-        {
-            ghostNodeState = GhostNodeStatesEnum.centerNode;
-            startingNode = ghostNodeCenter;
-            respawnState = GhostNodeStatesEnum.centerNode;
-        }
-        else if (ghostType == GhostType.blue)
-        {
-            ghostNodeState = GhostNodeStatesEnum.leftNode;
-            respawnState = GhostNodeStatesEnum.leftNode;
-            startingNode = ghostNodeLeft;
-        }
-        else if (ghostType == GhostType.orange)
-        {
-            ghostNodeState = GhostNodeStatesEnum.rightNode;
-            respawnState = GhostNodeStatesEnum.rightNode;
-            startingNode = ghostNodeRight;
-        }
-
-        movementController.currentNode = startingNode;
-        transform.position = startingNode.transform.position;
-    }
+    
 }
