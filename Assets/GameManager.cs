@@ -15,6 +15,18 @@ public class GameManager : MonoBehaviour
     public GameObject ghostNodeStart;
     public GameObject ghostNodeCenter;
 
+    public GameObject redGhost;
+    public GameObject pinkGhost;
+    public GameObject blueGhost;
+    public GameObject orangeGhost;
+
+    public enum GhostMode
+    {
+        chase, scatter
+    }
+
+    public GhostMode currentGhostMode;
+
     public GameObject loserWindowByIncorrectEssence; // Окно поражения из-за неправильной эссенции
     public GameObject loserWindowByMonster; // Окно поражения от монстра
     public GameObject winnerWindow; // Окно победы
@@ -128,7 +140,8 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        // ghostNodeStart.GetComponent<NodeController>().isGhostStartingNode = true;
+        currentGhostMode = GhostMode.chase;
+        ghostNodeStart.GetComponent<NodeController>().isGhostStartingNode = true;
     }
 
     void Update()
