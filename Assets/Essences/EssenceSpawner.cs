@@ -8,6 +8,8 @@ public class EssenceSpawner : MonoBehaviour
     [SerializeField]
     private GameObject yellowEssencePrefab;
     [SerializeField]
+    private GameObject blueEssencePrefab; // Префаб синей эссенции
+    [SerializeField]
     private Transform essencesParent;
 
     [SerializeField]
@@ -24,6 +26,7 @@ public class EssenceSpawner : MonoBehaviour
         // Флаги для проверки наличия эссенций каждого цвета
         bool hasRed = false;
         bool hasYellow = false;
+        bool hasBlue = false;
 
         // Проверяем существующие эссенции
         for (int i = essencesParent.childCount - 1; i >= 0; i--)
@@ -37,6 +40,8 @@ public class EssenceSpawner : MonoBehaviour
                     hasRed = true;
                 else if (essenceController.Color == EssenceColor.Yellow)
                     hasYellow = true;
+                else if (essenceController.Color == EssenceColor.Blue)
+                    hasBlue = true;
             }
         }
 
@@ -52,6 +57,13 @@ public class EssenceSpawner : MonoBehaviour
         {
             Instantiate(yellowEssencePrefab, GetRandomPosition(), Quaternion.identity, essencesParent);
             Debug.Log("Добавлена жёлтая эссенция, так как её не было на карте.");
+        }
+
+        // Убедимся, что на карте есть хотя бы одна синяя эссенция
+        if (!hasBlue)
+        {
+            Instantiate(blueEssencePrefab, GetRandomPosition(), Quaternion.identity, essencesParent);
+            Debug.Log("Добавлена синяя эссенция, так как её не было на карте.");
         }
     }
 
@@ -112,15 +124,16 @@ public class EssenceSpawner : MonoBehaviour
     // Возвращает случайный префаб эссенции
     private GameObject GetRandomEssencePrefab()
     {
-        if (redEssencePrefab == null || yellowEssencePrefab == null)
+        if (redEssencePrefab == null || yellowEssencePrefab == null || blueEssencePrefab == null)
         {
             Debug.LogError("Префабы эссенций не назначены в инспекторе!");
             return null;
         }
 
-        int randomIndex = Random.Range(0, 2);
+        int randomIndex = Random.Range(0, 3); // Убираем синюю эссенцию из выбора
         if (randomIndex == 0) return redEssencePrefab;
-        return yellowEssencePrefab;
+        if (randomIndex == 1) return yellowEssencePrefab;
+        return blueEssencePrefab;
     }
 
     // Возвращает случайную позицию в пределах родительского объекта

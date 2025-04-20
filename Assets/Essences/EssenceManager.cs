@@ -11,9 +11,12 @@ public class EssenceManager : MonoBehaviour
         { EssenceColor.Red, 0 },
         { EssenceColor.Yellow, 0 },
         { EssenceColor.Blue, 0 },
-        { EssenceColor.Purple, 0 },
+        { EssenceColor.Orange, 0 },
         { EssenceColor.Green, 0 },
-        { EssenceColor.Orange, 0 }
+        { EssenceColor.Purple, 0 },
+        { EssenceColor.Burgundy, 0 }, // Бордовое зелье
+        { EssenceColor.Mustard, 0 }, // Горчичное зелье
+        { EssenceColor.Murena, 0 }   // Мурена
     };
 
     public event EssenceChanged OnEssenceChanged;
@@ -29,12 +32,12 @@ public class EssenceManager : MonoBehaviour
     {
         GameManager gameManager = FindFirstObjectByType<GameManager>();
 
-        // Проверяем, есть ли у игрока сложная эссенция (фиолетовая, зелёная или оранжевая)
-        if (essenceCounts[EssenceColor.Purple] > 0 || 
-            essenceCounts[EssenceColor.Green] > 0 || 
-            essenceCounts[EssenceColor.Orange] > 0)
+        // Проверяем, есть ли у игрока сложное зелье (бордовое, горчичное или мурена)
+        if (essenceCounts[EssenceColor.Burgundy] > 0 || 
+            essenceCounts[EssenceColor.Mustard] > 0 || 
+            essenceCounts[EssenceColor.Murena] > 0)
         {
-            Debug.Log("У вас уже есть сложная эссенция. Нельзя собрать больше.");
+            Debug.Log("У вас уже есть сложное зелье (бордовое, горчичное или мурена). Нельзя собирать эссенции.");
             if (gameManager != null)
             {
                 gameManager.loserWindowByIncorrectEssence.SetActive(true); // Показываем окно поражения из-за неправильной эссенции
@@ -42,7 +45,7 @@ public class EssenceManager : MonoBehaviour
             }
             return;
         }
-
+        
         // Считаем количество базовых эссенций (красная, синяя, жёлтая)
         int basicEssenceCount = essenceCounts[EssenceColor.Red] +
                                 essenceCounts[EssenceColor.Yellow] +
@@ -111,9 +114,15 @@ public class EssenceManager : MonoBehaviour
 
     private void CheckForColorCombination()
     {
-        CombineEssences(EssenceColor.Red, EssenceColor.Yellow, EssenceColor.Orange);
-        CombineEssences(EssenceColor.Yellow, EssenceColor.Blue, EssenceColor.Green);
-        CombineEssences(EssenceColor.Blue, EssenceColor.Red, EssenceColor.Purple);
+        // Существующие комбинации
+        CombineEssences(EssenceColor.Red, EssenceColor.Yellow, EssenceColor.Orange); // Оранжевое зелье
+        CombineEssences(EssenceColor.Yellow, EssenceColor.Blue, EssenceColor.Green); // Зеленое зелье
+        CombineEssences(EssenceColor.Blue, EssenceColor.Red, EssenceColor.Purple);  // Фиолетовое зелье
+
+        // Новые комбинации
+        CombineEssences(EssenceColor.Purple, EssenceColor.Yellow, EssenceColor.Burgundy); // Бордовое зелье
+        CombineEssences(EssenceColor.Orange, EssenceColor.Red, EssenceColor.Mustard);    // Горчичное зелье
+        CombineEssences(EssenceColor.Green, EssenceColor.Blue, EssenceColor.Murena);     // Мурена
     }
 
     private void CombineEssences(EssenceColor color1, EssenceColor color2, EssenceColor resultColor)

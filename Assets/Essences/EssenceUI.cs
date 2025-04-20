@@ -15,6 +15,11 @@ public class EssenceUI : MonoBehaviour
     public TextMeshProUGUI orangeCount; // Ссылка на текстовое поле для отображения количества оранжевых эссенций
     public TextMeshProUGUI purpleCount; // Ссылка на текстовое поле для отображения количества фиолетовых эссенций
 
+    public TextMeshProUGUI blackCount;    // Черная эссенция
+    public TextMeshProUGUI burgundyCount; // Бордовое зелье
+    public TextMeshProUGUI mustardCount;  // Горчичное зелье
+    public TextMeshProUGUI murenaCount;   // Мурена
+
     public TextMeshProUGUI score;
 
     // Словарь для хранения текстовых полей по цветам эссенций
@@ -42,14 +47,15 @@ public class EssenceUI : MonoBehaviour
 
     private void InitializeTextFields()
     {
-
         essenceTextFields[EssenceColor.Red] = redCount;
         essenceTextFields[EssenceColor.Yellow] = yellowCount;
         essenceTextFields[EssenceColor.Blue] = blueCount;
-        essenceTextFields[EssenceColor.Green] = greenCount;
-
         essenceTextFields[EssenceColor.Orange] = orangeCount;
+        essenceTextFields[EssenceColor.Green] = greenCount;
         essenceTextFields[EssenceColor.Purple] = purpleCount;
+        essenceTextFields[EssenceColor.Burgundy] = burgundyCount;
+        essenceTextFields[EssenceColor.Mustard] = mustardCount;
+        essenceTextFields[EssenceColor.Murena] = murenaCount;
     }
 
     public void UpdateUI()

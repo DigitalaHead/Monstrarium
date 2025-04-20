@@ -5,9 +5,12 @@ public enum EssenceColor
     Red,
     Yellow,
     Blue,
-    Orange,
-    Green,  
-    Purple
+    Orange,    // Оранжевое зелье
+    Green,     // Зеленое зелье
+    Purple,    // Фиолетовое зелье
+    Burgundy,  // Бордовое зелье
+    Mustard,   // Горчичное зелье
+    Murena     // Мурена
 }
 
 
