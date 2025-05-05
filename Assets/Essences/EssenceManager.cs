@@ -126,6 +126,17 @@ public class EssenceManager : MonoBehaviour
         }
     }
 
+    public bool UseEssence(EssenceColor color)
+    {
+        if (essenceCounts[color] > 0)
+        {
+            essenceCounts[color]--;
+            OnEssenceChanged?.Invoke(); // Обновляем UI
+            return true;
+        }
+        return false;
+    }
+
     private void ActivateEffect()
     {
         if (effect != null)

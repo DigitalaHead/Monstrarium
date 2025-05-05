@@ -29,7 +29,8 @@ public class EnemyController : MonoBehaviour
         fireOrAqua,
         blue,
         pink,
-        orange
+        orange,
+        wood
     }
 
     public MonsterType monsterType;
@@ -401,32 +402,78 @@ public class EnemyController : MonoBehaviour
         {
             EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
 
-            if (essenceManager != null && essenceManager.UseOrangeEssence())
+            if (essenceManager != null)
             {
-                // Если у игрока есть оранжевая эссенция, монстр респавнится
-                readyToLeaveHome = false;
-                transform.position = ghostNodeCenter.transform.position;
-                movementController.currentNode = ghostNodeCenter;
-                movementController.lastMovingDirection = "down";
-                movementController.direction = "down";
-                ghostNodeState = GhostNodeStatesEnum.respawning;
-                StartCoroutine(RespawnGhost());
+                // Проверяем тип монстра и соответствующее зелье
+                bool monsterKilled = false;
 
-                // Начисляем 50 очков за убийство монстра
-                ScoreController.score += 50;
-                Debug.Log("Монстр убит! +50 очков.");
-            }
-            else
-            {
-                // Если у игрока нет оранжевой эссенции, игрок проигрывает
-                collision.gameObject.SetActive(false); // Отключаем объект игрока вместо уничтожения
-                if (gameManager.loserWindowByMonster != null)
+                switch (monsterType)
                 {
-                    gameManager.loserWindowByMonster.SetActive(true); // Показываем окно поражения
+                    case MonsterType.fireOrAqua: // Водный монстр
+                        if (essenceManager.UseEssence(EssenceColor.Murena))
+                        {
+                            monsterKilled = true;
+                            Debug.Log("Водный монстр убит муреной! +50 очков.");
+                        }
+                        break;
+
+                    case MonsterType.blue: // Электрический монстр
+                        if (essenceManager.UseEssence(EssenceColor.Purple))
+                        {
+                            monsterKilled = true;
+                            Debug.Log("Электрический монстр убит фиолетовым зельем! +50 очков.");
+                        }
+                        break;
+
+                    case MonsterType.pink: // Песчаный монстр
+                        if (essenceManager.UseEssence(EssenceColor.Burgundy))
+                        {
+                            monsterKilled = true;
+                            Debug.Log("Песчаный монстр убит бордовым зельем! +50 очков.");
+                        }
+                        break;
+
+                    case MonsterType.orange: // Керамический монстр
+                        if (essenceManager.UseEssence(EssenceColor.Mustard))
+                        {
+                            monsterKilled = true;
+                            Debug.Log("Керамический монстр убит горчичным зельем! +50 очков.");
+                        }
+                        break;
+
+                    case MonsterType.wood: // Древесный монстр
+                        if (essenceManager.UseEssence(EssenceColor.Green))
+                        {
+                            monsterKilled = true;
+                            Debug.Log("Древесный монстр убит зелёным зельем! +50 очков.");
+                        }
+                        break;
+                }
+
+                if (monsterKilled)
+                {
+                    // Если монстр убит, начисляем очки и респавним его
+                    ScoreController.score += 50;
+                    readyToLeaveHome = false;
+                    transform.position = ghostNodeCenter.transform.position;
+                    movementController.currentNode = ghostNodeCenter;
+                    movementController.lastMovingDirection = "down";
+                    movementController.direction = "down";
+                    ghostNodeState = GhostNodeStatesEnum.respawning;
+                    StartCoroutine(RespawnGhost());
                 }
                 else
                 {
-                    Debug.LogWarning("Окно поражения не назначено в инспекторе!");
+                    // Если у игрока нет нужного зелья, игрок проигрывает
+                    collision.gameObject.SetActive(false); // Отключаем объект игрока вместо уничтожения
+                    if (gameManager.loserWindowByMonster != null)
+                    {
+                        gameManager.loserWindowByMonster.SetActive(true); // Показываем окно поражения
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Окно поражения не назначено в инспекторе!");
+                    }
                 }
             }
         }
