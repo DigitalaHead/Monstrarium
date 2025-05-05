@@ -409,9 +409,12 @@ public class EnemyController : MonoBehaviour
                 movementController.currentNode = ghostNodeCenter;
                 movementController.lastMovingDirection = "down";
                 movementController.direction = "down";
-                //respawnState = GhostNodeStatesEnum.respawning;
                 ghostNodeState = GhostNodeStatesEnum.respawning;
                 StartCoroutine(RespawnGhost());
+
+                // Начисляем 50 очков за убийство монстра
+                ScoreController.score += 50;
+                Debug.Log("Монстр убит! +50 очков.");
             }
             else
             {

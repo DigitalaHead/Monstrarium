@@ -23,6 +23,8 @@ public class EssenceManager : MonoBehaviour
 
     private EssenceSpawner essenceSpawner;
 
+    public GameObject effect; // Ссылка на объект эффекта
+
     void Start()
     {
         essenceSpawner = FindFirstObjectByType<EssenceSpawner>();
@@ -31,6 +33,16 @@ public class EssenceManager : MonoBehaviour
     public void CollectEssence(Essence essence, GameObject obj)
     {
         GameManager gameManager = FindFirstObjectByType<GameManager>();
+
+        // Если игрок собирает черную эссенцию
+        if (essence.color == EssenceColor.Black)
+        {
+            Debug.Log("Черная эссенция собрана! Все зелья и эссенции очищены.");
+            ClearAllEssences(); // Очищаем все эссенции и зелья
+            Destroy(obj); // Удаляем черную эссенцию с карты
+            OnEssenceChanged?.Invoke(); // Обновляем UI
+            return;
+        }
 
         // Проверяем, есть ли у игрока сложное зелье (бордовое, горчичное или мурена)
         if (essenceCounts[EssenceColor.Burgundy] > 0 || 
@@ -102,11 +114,44 @@ public class EssenceManager : MonoBehaviour
             essenceCounts[EssenceColor.Orange]--;
             Debug.Log($"Оранжевое зелье использовано.");
             OnEssenceChanged?.Invoke();
+
+            // Активируем эффект
+            ActivateEffect();
+
             return true;
         }
         else
         {
             return false;
+        }
+    }
+
+    private void ActivateEffect()
+    {
+        if (effect != null)
+        {
+            effect.SetActive(true); // Включаем объект эффекта
+            Animator animator = effect.GetComponent<Animator>();
+            if (animator != null)
+            {
+                animator.SetTrigger("PlayEffect"); // Запускаем анимацию
+            }
+
+            // Отключаем эффект через 2 секунды
+            StartCoroutine(DisableEffectAfterDelay(2f));
+        }
+        else
+        {
+            Debug.LogWarning("Объект эффекта не назначен!");
+        }
+    }
+
+    private System.Collections.IEnumerator DisableEffectAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (effect != null)
+        {
+            effect.SetActive(false); // Отключаем объект эффекта
         }
     }
 
@@ -135,5 +180,14 @@ public class EssenceManager : MonoBehaviour
             Debug.Log($"Создано зелье: {resultColor}");
             OnEssenceChanged?.Invoke();
         }
+    }
+
+    private void ClearAllEssences()
+    {
+        foreach (var color in essenceCounts.Keys.ToList())
+        {
+            essenceCounts[color] = 0; // Обнуляем количество всех эссенций
+        }
+        Debug.Log("Все эссенции и зелья очищены.");
     }
 }

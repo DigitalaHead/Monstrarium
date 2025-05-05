@@ -10,14 +10,25 @@ public class EssenceSpawner : MonoBehaviour
     [SerializeField]
     private GameObject blueEssencePrefab; // Префаб синей эссенции
     [SerializeField]
+    private GameObject blackEssencePrefab; // Префаб черной эссенции
+    [SerializeField]
     private Transform essencesParent;
+    [SerializeField]
+    private Transform blackEssenceSpawnPoint; // Точка появления черной эссенции
 
     [SerializeField]
     private float respawnTime = 5f; // Время до респауна эссенции
+    [SerializeField]
+    private float blackEssenceSpawnInterval = 5f; // Интервал появления черной эссенции
+
+    private GameObject currentBlackEssence; // Ссылка на текущую черную эссенцию
 
     void Start()
     {
+        Debug.Log("Инициализация EssenceSpawner...");
         InitializeEssences();
+        Debug.Log("Запуск корутины для спауна черной эссенции...");
+        StartCoroutine(SpawnBlackEssenceRoutine());
     }
 
     // Инициализация эссенций на старте
@@ -119,6 +130,23 @@ public class EssenceSpawner : MonoBehaviour
     {
         yield return new WaitForSeconds(delay); // Ждём указанное время
         SpawnEssences(position); // Спауним новую эссенцию
+    }
+
+    // Корутин для спауна черной эссенции
+    private IEnumerator SpawnBlackEssenceRoutine()
+    {
+        while (true)
+        {
+            // Ждём заданный интервал
+            yield return new WaitForSeconds(blackEssenceSpawnInterval);
+
+            // Если черной эссенции нет, создаём её
+            if (currentBlackEssence == null)
+            {
+                currentBlackEssence = Instantiate(blackEssencePrefab, blackEssenceSpawnPoint.position, Quaternion.identity);
+                Debug.Log("Черная эссенция появилась!");
+            }
+        }
     }
 
     // Возвращает случайный префаб эссенции
