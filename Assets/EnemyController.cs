@@ -2,13 +2,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Net.Cache;
 using System.Security.Cryptography;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : Sounds
 {
     public bool CollectionCombinations = false;
+
+    public bool clone = false;
+
+    [Header("References")]
+    public GameManager gameManager;
 
     public enum GhostNodeStatesEnum
     {
@@ -26,7 +33,7 @@ public class EnemyController : MonoBehaviour
 
     public enum MonsterType
     {
-        fireOrAqua,
+        red,
         blue,
         pink,
         orange
@@ -43,7 +50,7 @@ public class EnemyController : MonoBehaviour
     public GameObject startingNode;
 
     public bool readyToLeaveHome = false;
-    public GameManager gameManager;
+    //public GameManager gameManager;
     public bool testRespawn = false;
 
     public bool isFrightened = false;
@@ -51,41 +58,68 @@ public class EnemyController : MonoBehaviour
     public GameObject[] scatterNodes;
     public int scatterNodeIndex;
 
+
     void Awake()
     {
         scatterNodeIndex = 0;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         movementController = GetComponent<MovementController>();
 
-        if (monsterType == MonsterType.fireOrAqua)
+        if (clone)
         {
-            ghostNodeState = GhostNodeStatesEnum.startNode;
-            respawnState = GhostNodeStatesEnum.centerNode;
-            startingNode = ghostNodeStart;
-            readyToLeaveHome = true;
+            ghostNodeStart = gameManager.ghostNodeStart;
+            ghostNodeCenter = gameManager.ghostNodeCenter;
+            ghostNodeRight = gameManager.ghostNodeRight;
+            ghostNodeLeft = gameManager.ghostNodeLeft;
+
+            // Устанавливаем состояние "respawning" для корректного выхода
+            // ghostNodeState = GhostNodeStatesEnum.respawning;
+            //respawnState = GhostNodeStatesEnum.movingInNodes; // Сразу перейдём в режим патрулирования
+            readyToLeaveHome =true;
             
-        }
-        else if (monsterType == MonsterType.pink)
-        {
+
+            // Начинаем движение из центра
+            movementController.currentNode = ghostNodeCenter;
+            transform.position = ghostNodeCenter.transform.position;
+
             ghostNodeState = GhostNodeStatesEnum.centerNode;
-            startingNode = ghostNodeCenter;
-            respawnState = GhostNodeStatesEnum.centerNode;
-        }
-        else if (monsterType == MonsterType.blue)
-        {
-            ghostNodeState = GhostNodeStatesEnum.leftNode;
-            respawnState = GhostNodeStatesEnum.leftNode;
-            startingNode = ghostNodeLeft;
-        }
-        else if (monsterType == MonsterType.orange)
-        {
-            ghostNodeState = GhostNodeStatesEnum.rightNode;
-            respawnState = GhostNodeStatesEnum.rightNode;
-            startingNode = ghostNodeRight;
+
+            // Направление вверх (как в оригинальном Pacman)
+
         }
 
-        movementController.currentNode = startingNode;
-        transform.position = startingNode.transform.position;
+        else 
+        {
+            if (monsterType == MonsterType.red)
+            {
+                ghostNodeState = GhostNodeStatesEnum.startNode;
+                respawnState = GhostNodeStatesEnum.centerNode;
+                startingNode = ghostNodeStart;
+                readyToLeaveHome = true;
+
+            }
+            else if (monsterType == MonsterType.pink)
+            {
+                ghostNodeState = GhostNodeStatesEnum.centerNode;
+                startingNode = ghostNodeCenter;
+                respawnState = GhostNodeStatesEnum.centerNode;
+            }
+            else if (monsterType == MonsterType.blue)
+            {
+                ghostNodeState = GhostNodeStatesEnum.leftNode;
+                respawnState = GhostNodeStatesEnum.leftNode;
+                startingNode = ghostNodeLeft;
+            }
+            else if (monsterType == MonsterType.orange)
+            {
+                ghostNodeState = GhostNodeStatesEnum.rightNode;
+                respawnState = GhostNodeStatesEnum.rightNode;
+                startingNode = ghostNodeRight;
+            }
+
+            movementController.currentNode = startingNode;
+            transform.position = startingNode.transform.position;
+        }
     }
 
     void Update()
@@ -132,7 +166,7 @@ public class EnemyController : MonoBehaviour
             // режим погони
             else
             {
-                if (monsterType == MonsterType.fireOrAqua)
+                if (monsterType == MonsterType.red)
                 {
                     DetermineRedGhostDirection();
                 }
@@ -159,7 +193,7 @@ public class EnemyController : MonoBehaviour
         {
             string direction = "";
 
-            if (transform.position == ghostNodeStart.transform.position)
+            if (!clone && transform.position == ghostNodeStart.transform.position)
             {
                 direction = "down";
             }
@@ -210,8 +244,16 @@ public class EnemyController : MonoBehaviour
                 }
                 else if (ghostNodeState == GhostNodeStatesEnum.startNode)
                 {
-                    ghostNodeState = GhostNodeStatesEnum.movingInNodes;
-                    movementController.SetDirection("left");
+                    if (!clone) // Для обычных призраков
+                    {
+                        ghostNodeState = GhostNodeStatesEnum.movingInNodes;
+                        movementController.SetDirection("left");
+                    }
+                    else // Для клонов
+                    {
+                        ghostNodeState = GhostNodeStatesEnum.movingInNodes;
+                        // Оставляем текущее направление ("up")
+                    }
                 }
             }
         }
@@ -242,6 +284,9 @@ public class EnemyController : MonoBehaviour
 
     void DetermineBlueGhostDirection()
     {
+        string direction = GetClosestDirection(gameManager.pacman.transform.position);
+        movementController.SetDirection(direction);
+        /*
         string playerDirection = gameManager.pacman.GetComponent<MovementController>().lastMovingDirection;
         float distanceBetWeenNode = 0.17f;
 
@@ -270,6 +315,7 @@ public class EnemyController : MonoBehaviour
         Vector2 blueTarget = new Vector2 (target.x + xDistance, target.y + yDistance);
         string direction = GetClosestDirection (blueTarget);
         movementController.SetDirection(direction);
+        */
 
     }
 
@@ -403,18 +449,12 @@ public class EnemyController : MonoBehaviour
 
             if (essenceManager != null && essenceManager.UseOrangeEssence())
             {
-                // Если у игрока есть оранжевая эссенция, монстр респавнится
-                readyToLeaveHome = false;
-                transform.position = ghostNodeCenter.transform.position;
-                movementController.currentNode = ghostNodeCenter;
-                movementController.lastMovingDirection = "down";
-                movementController.direction = "down";
-                //respawnState = GhostNodeStatesEnum.respawning;
-                ghostNodeState = GhostNodeStatesEnum.respawning;
-                StartCoroutine(RespawnGhost());
+                PlaySound(sounds[0]);
+                StartCoroutine(RespawnRandomGhost());
             }
             else
             {
+                PlaySound(sounds[1]);
                 // Если у игрока нет оранжевой эссенции, игрок проигрывает
                 collision.gameObject.SetActive(false); // Отключаем объект игрока вместо уничтожения
                 if (gameManager.loserWindowByMonster != null)
@@ -435,5 +475,90 @@ public class EnemyController : MonoBehaviour
         readyToLeaveHome = true;
     }
 
+
     
+    /*
+    public IEnumerator RespawnSimpleGhost()
+    {
+        gameObject.SetActive(false);
+        // 1. Ждем 2 секунды
+        yield return new WaitForSeconds(2f);
+
+        // 2. Спавним упрощенного монстра
+        GameObject newGhost = Instantiate(
+            gameManager.simpleGhostPrefab,
+            Vector3.zero,
+            Quaternion.identity
+        );
+
+        // 3. Уничтожаем старый объект
+        Destroy(gameObject);
+    }*/
+
+
+    public IEnumerator RespawnRandomGhost()
+    {
+        // 1. Фиксируем позицию
+        Vector3 spawnPos = ghostNodeCenter.transform.position;
+
+        // 2. Деактивируем старого монстра (не уничтожаем!)
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        Collider2D collider = GetComponent<Collider2D>();
+
+        if (spriteRenderer != null) spriteRenderer.enabled = false;
+        if (collider != null) collider.enabled = false;
+
+        // 3. Ждём 2 секунды
+        yield return new WaitForSeconds(2f);
+
+        MonsterType randomType = (MonsterType)UnityEngine.Random.Range(0, 6);
+
+        GameObject ghostPrefab = gameManager.GetGhostPrefab(randomType);
+
+        // 4. Берём рандомного монстра для спавна
+        GameObject newGhost = Instantiate(
+            ghostPrefab,
+            spawnPos,
+            Quaternion.identity
+        );
+
+        // 5. Принудительно включаем (на случай если префаб выключен)
+        newGhost.SetActive(true);
+
+        // 6. Уничтожаем старый объект
+        Destroy(gameObject);
+    }
+
+    /*
+    public IEnumerator RespawnRandomGhost()
+    {
+        // 1. Деактивируем текущего монстра
+        gameObject.SetActive(false);
+
+        // 2. Ждём 2 секунды
+        yield return new WaitForSeconds(2f);
+
+        // 3. Получаем случайный тип монстра
+        MonsterType randomType = (MonsterType)UnityEngine.Random.Range(0, 4);
+
+        // 4. Получаем префаб через GameManager
+        GameObject ghostPrefab = gameManager.GetGhostPrefab(randomType);
+
+        // 5. Спавним нового монстра
+        GameObject newGhost = Instantiate(
+            ghostPrefab,
+            ghostNodeCenter.transform.position,
+            Quaternion.identity
+        );
+
+        // 6. Настраиваем его параметры
+        EnemyController newController = newGhost.GetComponent<EnemyController>();
+        newController.ghostNodeState = GhostNodeStatesEnum.respawning;
+        newController.respawnState = GhostNodeStatesEnum.centerNode;
+        newController.movementController.currentNode = ghostNodeCenter;
+
+        // 7. Уничтожаем старый объект монстра
+        Destroy(gameObject);
+    }
+    */
 }
