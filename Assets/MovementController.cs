@@ -8,7 +8,7 @@ public class MovementController : MonoBehaviour
 {
     public GameManager gameManager;
     public GameObject currentNode;
-    public float speed = 4f;
+    public float speed = 200f;
     public string direction = "";
     public string lastMovingDirection = "";
 

@@ -262,14 +262,14 @@ public class EnemyController : Sounds
     void DetermineOrangeGhostDirection()
     {
         float distance = Vector2.Distance(gameManager.pacman.transform.position, transform.position);
-        float distanceBetweenNodes = 0.17f;
+        float distanceBetweenNodes = 36f;
         if (distance < 0)
         {
             distance *= -1;
         }
 
         // If we are within 8 nodes of pacman, chase him using red's logic
-        if (distance <= distanceBetweenNodes * 10)
+        if (distance <= distanceBetweenNodes * 5)
         {
             DetermineRedGhostDirection();
         }
@@ -322,7 +322,7 @@ public class EnemyController : Sounds
     void DeterminePinkGhostDirection()
     {
         string playerDirection = gameManager.pacman.GetComponent<MovementController>().lastMovingDirection;
-        float distanceBetWeenNode = 0.17f;
+        float distanceBetWeenNode = 36f;
 
         Vector2 target = gameManager.pacman.transform.position;
         if (playerDirection == "left")
@@ -476,7 +476,7 @@ public class EnemyController : Sounds
     }
 
 
-    
+
     /*
     public IEnumerator RespawnSimpleGhost()
     {
@@ -495,7 +495,7 @@ public class EnemyController : Sounds
         Destroy(gameObject);
     }*/
 
-
+    
     public IEnumerator RespawnRandomGhost()
     {
         // 1. Фиксируем позицию
@@ -529,36 +529,43 @@ public class EnemyController : Sounds
         Destroy(gameObject);
     }
 
+
+
     /*
     public IEnumerator RespawnRandomGhost()
     {
-        // 1. Деактивируем текущего монстра
-        gameObject.SetActive(false);
+        // 1. Фиксируем позицию спавна (центр)
+        Vector3 spawnPos = ghostNodeCenter.transform.position;
 
-        // 2. Ждём 2 секунды
+        // 2. Отключаем визуал и коллайдер у старого монстра
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        Collider2D collider = GetComponent<Collider2D>();
+
+        if (spriteRenderer != null) spriteRenderer.enabled = false;
+        if (collider != null) collider.enabled = false;
+
+        // 3. Ждём 2 секунды перед респавном
         yield return new WaitForSeconds(2f);
 
-        // 3. Получаем случайный тип монстра
-        MonsterType randomType = (MonsterType)UnityEngine.Random.Range(0, 4);
-
-        // 4. Получаем префаб через GameManager
-        GameObject ghostPrefab = gameManager.GetGhostPrefab(randomType);
-
-        // 5. Спавним нового монстра
+        // 4. Берём КРАСНОГО монстра (вместо случайного)
         GameObject newGhost = Instantiate(
-            ghostPrefab,
-            ghostNodeCenter.transform.position,
+            gameManager.fireMonsterPrefab, // Используем прямое обращение к префабу
+            spawnPos,
             Quaternion.identity
         );
 
-        // 6. Настраиваем его параметры
+        // 5. Настраиваем компоненты нового монстра
         EnemyController newController = newGhost.GetComponent<EnemyController>();
-        newController.ghostNodeState = GhostNodeStatesEnum.respawning;
-        newController.respawnState = GhostNodeStatesEnum.centerNode;
-        newController.movementController.currentNode = ghostNodeCenter;
+        if (newController != null)
+        {
+            newController.ghostNodeState = GhostNodeStatesEnum.movingInNodes;
+            newController.respawnState = GhostNodeStatesEnum.movingInNodes;
+            newController.movementController.currentNode = ghostNodeCenter;
+        }
 
-        // 7. Уничтожаем старый объект монстра
+        // 6. Уничтожаем старый объект
         Destroy(gameObject);
     }
     */
+
 }
