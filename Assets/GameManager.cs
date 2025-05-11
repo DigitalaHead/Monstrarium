@@ -1,9 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MonsterType = EnemyController.MonsterType;
+using Debug = UnityEngine.Debug;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Sounds
 {
     public GameObject leftWarpNode;
     public GameObject rightWarpNode;
@@ -20,6 +24,51 @@ public class GameManager : MonoBehaviour
     public GameObject blueGhost;
     public GameObject orangeGhost;
 
+    [Header("Ghost Prefabs")]
+    public GameObject fireMonsterPrefab;
+    public GameObject aquaMonsterPrefab;
+    public GameObject woodMonsterPrefab;
+    public GameObject ceramicMonsterPrefab;
+    public GameObject electroMonsterPrefab;
+    public GameObject sandMonsterPrefab;
+
+    [SerializeField] private float soundInterval = 15f;
+    private Coroutine soundRoutine;
+
+    void Awake()
+    {
+
+        currentGhostMode = GhostMode.chase;
+        ghostNodeStart.GetComponent<NodeController>().isGhostStartingNode = true;
+    }
+
+    // Метод для получения префаба по типу
+    public GameObject GetGhostPrefab(MonsterType type)
+    {
+        // Вспомогательная функция для случайного выбора
+        GameObject GetRandomPrefab(GameObject prefabA, GameObject prefabB)
+        {
+            if (prefabA == null) return prefabB;
+            if (prefabB == null) return prefabA;
+            return UnityEngine.Random.Range(0, 2) == 0 ? prefabA : prefabB;
+        }
+
+        switch (type)
+        {
+            case MonsterType.red:
+                return fireMonsterPrefab;
+            case MonsterType.blue:
+                return aquaMonsterPrefab;
+            case MonsterType.pink:
+                return GetRandomPrefab(woodMonsterPrefab, ceramicMonsterPrefab);
+            case MonsterType.orange:
+                return GetRandomPrefab(electroMonsterPrefab, sandMonsterPrefab);
+            default:
+                return fireMonsterPrefab;
+        }
+    }
+
+
     public enum GhostMode
     {
         chase, scatter
@@ -35,9 +84,36 @@ public class GameManager : MonoBehaviour
 
     public EnemyController enemyController; // Ссылка на EnemyController
 
+
+
     void Start()
     {
         enemyController = FindFirstObjectByType<EnemyController>(); // Находим EnemyController в сцене
+        StartRandomSoundCycle();
+    }
+
+    public void StartRandomSoundCycle()
+    {
+        if (soundRoutine != null)
+        {
+            StopCoroutine(soundRoutine);
+        }
+        soundRoutine = StartCoroutine(RandomSoundCycle());
+    }
+
+    private IEnumerator RandomSoundCycle()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(soundInterval);
+            PlayRandomSound(); // Метод из родительского класса
+        }
+    }
+
+    public void SetSoundInterval(float newInterval)
+    {
+        soundInterval = newInterval;
+        StartRandomSoundCycle(); // Перезапускаем с новым интервалом
     }
 
     // Метод для перезапуска текущего уровня
@@ -138,11 +214,12 @@ public class GameManager : MonoBehaviour
         Debug.Log("Игра продолжена, монстры сброшены.");
     }
 
-    void Awake()
+   /* void Awake()
     {
+        
         currentGhostMode = GhostMode.chase;
         ghostNodeStart.GetComponent<NodeController>().isGhostStartingNode = true;
-    }
+    }*/
 
     void Update()
     {
