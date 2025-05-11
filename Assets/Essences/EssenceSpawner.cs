@@ -19,15 +19,13 @@ public class EssenceSpawner : MonoBehaviour
     [SerializeField]
     private float respawnTime = 5f; // Время до респауна эссенции
     [SerializeField]
-    private float blackEssenceSpawnInterval = 5f; // Интервал появления черной эссенции
+    private float blackEssenceSpawnInterval = 60f; // Интервал появления черной эссенции
 
     private GameObject currentBlackEssence; // Ссылка на текущую черную эссенцию
 
     void Start()
     {
-        Debug.Log("Инициализация EssenceSpawner...");
         InitializeEssences();
-        Debug.Log("Запуск корутины для спауна черной эссенции...");
         StartCoroutine(SpawnBlackEssenceRoutine());
     }
 
