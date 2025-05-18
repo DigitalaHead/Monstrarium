@@ -25,9 +25,12 @@ public class EssenceManager : MonoBehaviour
 
     public GameObject effect; // Ссылка на объект эффекта
 
+    public PlayerController player;
+
     void Start()
     {
         essenceSpawner = FindFirstObjectByType<EssenceSpawner>();
+        player = FindFirstObjectByType<PlayerController>();
     }
 
     public void CollectEssence(Essence essence, GameObject obj)
@@ -50,11 +53,19 @@ public class EssenceManager : MonoBehaviour
             essenceCounts[EssenceColor.Murena] > 0)
         {
             Debug.Log("У вас уже есть сложное зелье (бордовое, горчичное или мурена). Нельзя собирать эссенции.");
-            if (gameManager != null)
+
+            // Находим игрока и вызываем смерть с духом
+            
+            if (player != null && !player.IsDead)
             {
-                gameManager.loserWindowByIncorrectEssence.SetActive(true); // Показываем окно поражения из-за неправильной эссенции
-                Time.timeScale = 0; // Останавливаем время
+                player.DieFromWrongEssence(); // Только этот метод!
             }
+            else
+            {
+                Debug.LogWarning("Игрок не найден или уже мёртв.");
+            }
+
+            // Окно поражения и Time.timeScale = 0 вызываются из корутины в PlayerController
             return;
         }
         
@@ -63,24 +74,14 @@ public class EssenceManager : MonoBehaviour
                                 essenceCounts[EssenceColor.Yellow] +
                                 essenceCounts[EssenceColor.Blue];
 
-        // Если у игрока уже две базовые эссенции, нельзя собрать больше
-        if (basicEssenceCount >= 2 && 
-            (essence.color == EssenceColor.Red || 
-             essence.color == EssenceColor.Yellow || 
-             essence.color == EssenceColor.Blue))
-        {
-            Debug.Log("У вас уже есть две базовые эссенции. Нельзя собрать больше.");
-            return;
-        }
 
         // Проверяем, есть ли у игрока уже эссенция этого цвета
         if (essenceCounts.TryGetValue(essence.color, out int count) && count > 0)
         {
             Debug.Log($"У вас уже есть эссенция цвета {essence.color}. Нельзя собрать одинаковые эссенции.");
-            if (gameManager != null)
+            if (player != null && !player.IsDead)
             {
-                gameManager.loserWindowByIncorrectEssence.SetActive(true); // Показываем окно поражения из-за неправильной эссенции
-                Time.timeScale = 0; // Останавливаем время
+                player.DieFromWrongEssence();
             }
             return;
         }
@@ -89,7 +90,7 @@ public class EssenceManager : MonoBehaviour
         Debug.Log($"Собрана эссенция: {essence.color}");
         essenceCounts[essence.color]++;
         ScoreController.score += 10;
-
+        OnEssenceChanged?.Invoke(); // Убедитесь, что событие вызывается
         // Проверяем, существует ли EssenceSpawner
         if (essenceSpawner != null)
         {
@@ -107,25 +108,6 @@ public class EssenceManager : MonoBehaviour
         CheckForColorCombination();
     }
 
-    public bool UseOrangeEssence()
-    {
-        if (essenceCounts[EssenceColor.Orange] > 0)
-        {
-            essenceCounts[EssenceColor.Orange]--;
-            Debug.Log($"Оранжевое зелье использовано.");
-            OnEssenceChanged?.Invoke();
-
-            // Активируем эффект
-            ActivateEffect();
-
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     public bool UseEssence(EssenceColor color)
     {
         if (essenceCounts[color] > 0)
@@ -135,6 +117,48 @@ public class EssenceManager : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    public bool TryKillMonster(EnemyController.MonsterType monsterType)
+    {
+        EssenceColor requiredEssence = GetEssenceForMonster(monsterType);
+
+        if (essenceCounts[requiredEssence] > 0)
+        {
+            essenceCounts[requiredEssence]--;
+            Debug.Log($"Использовано зелье {requiredEssence} для убийства монстра {monsterType}.");
+
+            // Добавляем 50 очков за убийство монстра
+            ScoreController.score += 50;
+            Debug.Log($"Счет увеличен на 50. Текущий счет: {ScoreController.score}");
+
+            OnEssenceChanged?.Invoke(); // Обновляем UI
+            return true;
+        }
+
+        return false;
+    }
+
+    private EssenceColor GetEssenceForMonster(EnemyController.MonsterType monsterType)
+    {
+        switch (monsterType)
+        {
+            case EnemyController.MonsterType.red:
+                return EssenceColor.Orange; // Оранжевое зелье убивает огненного монстра
+            case EnemyController.MonsterType.blue:
+                return EssenceColor.Murena; // Мурена убивает водяного монстра
+            case EnemyController.MonsterType.pink:
+                return EssenceColor.Green; // Зеленое зелье убивает древесного монстра
+            case EnemyController.MonsterType.electro:
+                return EssenceColor.Purple; // Фиолетовое зелье убивает электрического монстра
+            case EnemyController.MonsterType.sand:
+                return EssenceColor.Burgundy; // Бордовое зелье убивает песчаного монстра
+            case EnemyController.MonsterType.ceramic:
+                return EssenceColor.Mustard; // Горчичное зелье убивает керамического монстра
+            default:
+                Debug.LogWarning($"Неизвестный тип монстра: {monsterType}");
+                return EssenceColor.Red; // Возвращаем значение по умолчанию
+        }
     }
 
     private void ActivateEffect()
@@ -168,6 +192,17 @@ public class EssenceManager : MonoBehaviour
 
     public int GetEssenceCount(EssenceColor color) => essenceCounts.TryGetValue(color, out int count) ? count : 0;
 
+    public bool HasEssence(EssenceColor essenceColor)
+    {
+        if (essenceCounts.ContainsKey(essenceColor))
+        {
+            return essenceCounts[essenceColor] > 0; // Проверяем, есть ли хотя бы одно зелье данного цвета
+        }
+
+        Debug.LogWarning($"Цвет зелья {essenceColor} не найден в словаре essenceCounts!");
+        return false;
+    }
+
     private void CheckForColorCombination()
     {
         // Существующие комбинации
@@ -200,5 +235,6 @@ public class EssenceManager : MonoBehaviour
             essenceCounts[color] = 0; // Обнуляем количество всех эссенций
         }
         Debug.Log("Все эссенции и зелья очищены.");
+        OnEssenceChanged?.Invoke();
     }
 }

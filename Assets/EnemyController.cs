@@ -33,10 +33,12 @@ public class EnemyController : Sounds
 
     public enum MonsterType
     {
-        red,
-        blue,
-        pink,
-        orange
+        red,       // Огненный
+        blue,      // Водяной
+        pink,      // Древесный
+        electro,    // Электрический
+        sand,      // Песчаный
+        ceramic    // Керамический
     }
 
     public MonsterType monsterType;
@@ -57,7 +59,6 @@ public class EnemyController : Sounds
 
     public GameObject[] scatterNodes;
     public int scatterNodeIndex;
-
 
     void Awake()
     {
@@ -110,7 +111,7 @@ public class EnemyController : Sounds
                 respawnState = GhostNodeStatesEnum.leftNode;
                 startingNode = ghostNodeLeft;
             }
-            else if (monsterType == MonsterType.orange)
+            else if (monsterType == MonsterType.electro)
             {
                 ghostNodeState = GhostNodeStatesEnum.rightNode;
                 respawnState = GhostNodeStatesEnum.rightNode;
@@ -181,7 +182,7 @@ public class EnemyController : Sounds
                     DetermineBlueGhostDirection();
                 }
 
-                else if (monsterType == MonsterType.orange)
+                else if (monsterType == MonsterType.electro)
                 {
                     DetermineOrangeGhostDirection();
                 }
@@ -435,10 +436,16 @@ public class EnemyController : Sounds
             possibleDirections.Add("left");
         }
 
-        string direction = "";
+        // Проверяем, есть ли доступные направления
+        if (possibleDirections.Count == 0)
+        {
+            // Если нет доступных направлений, возвращаем текущее направление
+            return movementController.lastMovingDirection;
+        }
+
+        // Выбираем случайное направление
         int randomDirectionIndex = UnityEngine.Random.Range(0, possibleDirections.Count);
-        direction = possibleDirections[randomDirectionIndex];
-        return direction;
+        return possibleDirections[randomDirectionIndex];
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -447,24 +454,24 @@ public class EnemyController : Sounds
         {
             EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
 
-            if (essenceManager != null && essenceManager.UseOrangeEssence())
+            if (essenceManager != null && essenceManager.TryKillMonster(monsterType))
             {
+                Debug.Log($"Монстр {monsterType} убит!");
                 PlaySound(sounds[0]);
-                StartCoroutine(RespawnRandomGhost());
+                Destroy(gameObject);
             }
             else
             {
+              //  Debug.Log($"Игрок не имеет подходящего зелья для убийства {monsterType}!");
                 PlaySound(sounds[1]);
-                // Если у игрока нет оранжевой эссенции, игрок проигрывает
-                collision.gameObject.SetActive(false); // Отключаем объект игрока вместо уничтожения
-                if (gameManager.loserWindowByMonster != null)
+
+                // Получаем PlayerController и меняем спрайт на смерть
+                PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
+                if (playerController != null && !playerController.IsDead)
                 {
-                    gameManager.loserWindowByMonster.SetActive(true); // Показываем окно поражения
+                    playerController.DieFromMonster();
                 }
-                else
-                {
-                    Debug.LogWarning("Окно поражения не назначено в инспекторе!");
-                }
+                StartCoroutine(ShowLoseWindowWithDelay());
             }
         }
     }
@@ -568,4 +575,13 @@ public class EnemyController : Sounds
     }
     */
 
+    private IEnumerator ShowLoseWindowWithDelay()
+    {
+        yield return new WaitForSeconds(3f); // Ждём 3 секунды
+
+        if (gameManager.loserWindowByMonster != null)
+        {
+            gameManager.loserWindowByMonster.SetActive(true);
+        }
+    }
 }

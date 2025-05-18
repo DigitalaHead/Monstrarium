@@ -215,7 +215,11 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "\u0434\u0435\u0440\u0435\u0432\u043E 2_0": 8736924280633857803
+      "\u0434\u0435\u0440\u0435\u0432\u043E 2_1": -6796119657249604429
+      "\u0434\u0435\u0440\u0435\u0432\u043E 2_2": 5811650440745583263
+      "\u0434\u0435\u0440\u0435\u0432\u043E 2_3": -5335836713457483652
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

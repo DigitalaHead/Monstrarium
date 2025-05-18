@@ -132,20 +132,23 @@ public class EssenceSpawner : MonoBehaviour
 
     // Корутин для спауна черной эссенции
     private IEnumerator SpawnBlackEssenceRoutine()
+{
+    while (true)
     {
-        while (true)
-        {
-            // Ждём заданный интервал
-            yield return new WaitForSeconds(blackEssenceSpawnInterval);
+        // Ждём заданный интервал
+        yield return new WaitForSeconds(blackEssenceSpawnInterval);
 
-            // Если черной эссенции нет, создаём её
-            if (currentBlackEssence == null)
-            {
-                currentBlackEssence = Instantiate(blackEssencePrefab, blackEssenceSpawnPoint.position, Quaternion.identity);
-                Debug.Log("Черная эссенция появилась!");
-            }
+        // Если черной эссенции нет, создаём её
+        if (blackEssencePrefab != null && blackEssenceSpawnPoint != null)
+        {
+            GameObject blackEssence = Instantiate(blackEssencePrefab, blackEssenceSpawnPoint.position, Quaternion.identity, essencesParent);
+        }
+        else
+        {
+            Debug.LogError("blackEssencePrefab или blackEssenceSpawnPoint не назначены!");
         }
     }
+}
 
     // Возвращает случайный префаб эссенции
     private GameObject GetRandomEssencePrefab()

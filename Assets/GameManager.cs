@@ -61,7 +61,7 @@ public class GameManager : Sounds
                 return aquaMonsterPrefab;
             case MonsterType.pink:
                 return GetRandomPrefab(woodMonsterPrefab, ceramicMonsterPrefab);
-            case MonsterType.orange:
+            case MonsterType.electro:
                 return GetRandomPrefab(electroMonsterPrefab, sandMonsterPrefab);
             default:
                 return fireMonsterPrefab;
