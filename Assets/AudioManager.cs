@@ -15,8 +15,8 @@ public class AudioManager : MonoBehaviour
     public AudioClip background;
     public AudioClip deathPlayer;
     public AudioClip deathEnemy;
-    public AudioClip �ollectedPotion;
-    public AudioClip �ollectedEssence;
+    public AudioClip CollectedPotion;
+    public AudioClip CollectedEssence;
 
     [Header("Random Sounds")]
     public AudioClip[] randomSounds; // �������� ���� 4 ����� ����� ���������

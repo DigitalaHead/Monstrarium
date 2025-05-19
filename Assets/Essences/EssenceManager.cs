@@ -4,7 +4,7 @@ using System.Linq;
 
 public class EssenceManager : MonoBehaviour
 {
-    AudioManager audioManager;
+    private AudioManager audioManager;
     public delegate void EssenceChanged();
 
     private Dictionary<EssenceColor, int> essenceCounts = new Dictionary<EssenceColor, int>
@@ -121,7 +121,7 @@ public class EssenceManager : MonoBehaviour
 
         // Добавляем эссенцию игроку
         audioManager = FindObjectOfType<AudioManager>();
-        audioManager.PlaySFX(audioManager.сollectedEssence);
+        audioManager.PlaySFX(audioManager.CollectedEssence);
 
         Debug.Log($"Собрана эссенция: {essence.color}");
         essenceCounts[essence.color]++;
@@ -278,7 +278,7 @@ public class EssenceManager : MonoBehaviour
         if (essenceCounts[color1] > 0 && essenceCounts[color2] > 0)
         {
             audioManager = FindObjectOfType<AudioManager>();
-            audioManager.PlaySFX(audioManager.сollectedPotion);
+            audioManager.PlaySFX(audioManager.CollectedPotion);
             essenceCounts[color1]--;
             essenceCounts[color2]--;
             essenceCounts[resultColor]++;
