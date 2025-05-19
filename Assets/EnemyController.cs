@@ -3,19 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Cache;
 using System.Security.Cryptography;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-public class EnemyController : Sounds
+public class EnemyController : MonoBehaviour
 {
     public bool CollectionCombinations = false;
 
     public bool clone = false;
 
+    public bool spriteRight = false;
+
     [Header("References")]
     public GameManager gameManager;
+
+    AudioManager audioManager;
+
+    public Animator animator;
 
     public enum GhostNodeStatesEnum
     {
@@ -58,9 +65,13 @@ public class EnemyController : Sounds
     public GameObject[] scatterNodes;
     public int scatterNodeIndex;
 
+    public SpriteRenderer sprite;
 
     void Awake()
     {
+        animator = GetComponentInChildren<Animator>();
+        sprite = GetComponentInChildren<SpriteRenderer>();
+
         scatterNodeIndex = 0;
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         movementController = GetComponent<MovementController>();
@@ -75,8 +86,8 @@ public class EnemyController : Sounds
             // Устанавливаем состояние "respawning" для корректного выхода
             // ghostNodeState = GhostNodeStatesEnum.respawning;
             //respawnState = GhostNodeStatesEnum.movingInNodes; // Сразу перейдём в режим патрулирования
-            readyToLeaveHome =true;
-            
+            readyToLeaveHome = true;
+
 
             // Начинаем движение из центра
             movementController.currentNode = ghostNodeCenter;
@@ -88,7 +99,7 @@ public class EnemyController : Sounds
 
         }
 
-        else 
+        else
         {
             if (monsterType == MonsterType.red)
             {
@@ -124,24 +135,73 @@ public class EnemyController : Sounds
 
     void Update()
     {
+
         if (testRespawn)
         {
             readyToLeaveHome = false;
             ghostNodeState = GhostNodeStatesEnum.respawning;
             testRespawn = false;
         }
+
+        //animator.SetBool("Moving", true);
+
+        bool flipX = false;
+        //bool flipY = false;
+
+        if (spriteRight)
+        {
+           // if (movementController.lastMovingDirection == "right")
+           // {
+            //    animator.SetBool("Moving", true);
+           // }
+
+            if (movementController.lastMovingDirection == "left")
+            {
+               // animator.SetBool("Moving", true);
+                flipX = true;
+            }
+        }
+        else
+        {
+            //if (movementController.lastMovingDirection == "left")
+            //{
+              //  animator.SetBool("Moving", true);
+           // }
+
+            if (movementController.lastMovingDirection == "right")
+            {
+                //animator.SetBool("Moving", true);
+                flipX = true;
+            }
+        }
+
+
+        /*
+        else if (movementController.lastMovingDirection == "up")
+        {
+            animator.SetInteger("direction", 1);
+        }
+        else if (movementController.lastMovingDirection == "down")
+        {
+            animator.SetInteger("direction", 1);
+            flipY = true;
+        }
+
+        sprite.flipY = flipY;
+        */
+        sprite.flipX = flipX;
     }
 
     public void ReachedCenterOfNode(NodeController nodeController)
     {
-        
+
         if (ghostNodeState == GhostNodeStatesEnum.movingInNodes)
         {
             //режим разброса для указания по нему точного маршрута
             if (gameManager.currentGhostMode == GameManager.GhostMode.scatter)
             {
 
-                if(transform.position.x == scatterNodes[scatterNodeIndex].transform.position.x && transform.position.y == scatterNodes[scatterNodeIndex].transform.position.y)
+                if (transform.position.x == scatterNodes[scatterNodeIndex].transform.position.x && transform.position.y == scatterNodes[scatterNodeIndex].transform.position.y)
                 {
                     scatterNodeIndex++;
 
@@ -153,7 +213,7 @@ public class EnemyController : Sounds
 
                 string direction = GetClosestDirection(scatterNodes[scatterNodeIndex].transform.position);
                 movementController.SetDirection(direction);
-               
+
             }
 
             //режим неопределенности
@@ -187,7 +247,7 @@ public class EnemyController : Sounds
                 }
 
             }
-            
+
         }
         else if (ghostNodeState == GhostNodeStatesEnum.respawning)
         {
@@ -263,22 +323,27 @@ public class EnemyController : Sounds
     {
         float distance = Vector2.Distance(gameManager.pacman.transform.position, transform.position);
         float distanceBetweenNodes = 36f;
-        if (distance < 0)
-        {
-            distance *= -1;
-        }
 
-        // If we are within 8 nodes of pacman, chase him using red's logic
+        // Если близко к игроку - преследуем как красный призрак
         if (distance <= distanceBetweenNodes * 5)
         {
             DetermineRedGhostDirection();
         }
-        // Otherwise, use scatter mode logic
-        else
+        else // В режиме разброса
         {
-            // Scatter mode
-            string direction = GetRandomDirection();
-            movementController.SetDirection(direction);
+            NodeController currentNode = movementController.currentNode.GetComponent<NodeController>();
+
+            // Если мы в тупике - сразу разворачиваемся
+            if (IsDeadEnd(currentNode))
+            {
+                movementController.SetDirection(ReverseDirection(movementController.lastMovingDirection));
+            }
+            else
+            {
+                // Иначе выбираем случайное направление
+                string direction = GetRandomDirection();
+                movementController.SetDirection(direction);
+            }
         }
     }
 
@@ -329,7 +394,7 @@ public class EnemyController : Sounds
         {
             target.x -= distanceBetWeenNode * 5;
         }
-        else if (playerDirection == "right") 
+        else if (playerDirection == "right")
         {
             target.x += distanceBetWeenNode * 5;
         }
@@ -352,93 +417,102 @@ public class EnemyController : Sounds
         movementController.SetDirection(direction);
     }
 
+    private bool IsDeadEnd(NodeController node)
+    {
+        if (node == null) return false;
+
+        int exits = 0;
+        if (node.canMoveLeft) exits++;
+        if (node.canMoveRight) exits++;
+        if (node.canMoveUp) exits++;
+        if (node.canMoveDown) exits++;
+
+        return exits == 1;
+    }
+
+    private NodeController GetNodeAtPosition(Vector2 pos)
+    {
+        Collider2D hit = Physics2D.OverlapCircle(pos, 0.1f);
+        return hit != null ? hit.GetComponent<NodeController>() : null;
+    }
 
 
     string GetClosestDirection(Vector2 target)
     {
-        float shortestDistance = float.MaxValue;
-        string lastMovingDirection = movementController.lastMovingDirection;
-        string newDirection = "";
+        NodeController currentNode = movementController.currentNode.GetComponent<NodeController>();
+        NodeController targetNode = GetNodeAtPosition(target);
+        string lastDirection = movementController.lastMovingDirection;
 
-        NodeController nodeController = movementController.currentNode.GetComponent<NodeController>();
+        bool targetInDeadEnd = IsDeadEnd(targetNode);
+        Dictionary<string, float> directionScores = new Dictionary<string, float>();
+        float deadEndBonus = targetInDeadEnd ? 50f : 0f;
 
-        if (nodeController.canMoveUp && lastMovingDirection != "down")
+        // Проверяем все возможные направления
+        void EvaluateDirection(string direction, GameObject node)
         {
-            GameObject nodeUp = nodeController.nodeUp;
-            float distance = Vector2.Distance(nodeUp.transform.position, target);
+            if (node == null) return;
 
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                newDirection = "up";
-            }
+            NodeController nc = node.GetComponent<NodeController>();
+            float distance = Vector2.Distance(node.transform.position, target);
+
+            if (targetInDeadEnd && IsDeadEnd(nc))
+                distance -= deadEndBonus;
+
+            directionScores.Add(direction, distance);
         }
 
-        if (nodeController.canMoveDown && lastMovingDirection != "up")
+        if (currentNode.canMoveUp && lastDirection != "down")
+            EvaluateDirection("up", currentNode.nodeUp);
+
+        if (currentNode.canMoveDown && lastDirection != "up")
+            EvaluateDirection("down", currentNode.nodeDown);
+
+        if (currentNode.canMoveLeft && lastDirection != "right")
+            EvaluateDirection("left", currentNode.nodeLeft);
+
+        if (currentNode.canMoveRight && lastDirection != "left")
+            EvaluateDirection("right", currentNode.nodeRight);
+
+        return directionScores.Count > 0
+            ? directionScores.OrderBy(x => x.Value).First().Key
+            : ReverseDirection(lastDirection);
+    }
+
+
+    string ReverseDirection(string dir)
+    {
+        return dir switch
         {
-            GameObject nodeDown = nodeController.nodeDown;
-            float distance = Vector2.Distance(nodeDown.transform.position, target);
-
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                newDirection = "down";
-            }
-        }
-
-        if (nodeController.canMoveLeft && lastMovingDirection != "right")
-        {
-            GameObject nodeLeft = nodeController.nodeLeft;
-            float distance = Vector2.Distance(nodeLeft.transform.position, target);
-
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                newDirection = "left";
-            }
-        }
-
-        if (nodeController.canMoveRight && lastMovingDirection != "left")
-        {
-            GameObject nodeRight = nodeController.nodeRight;
-            float distance = Vector2.Distance(nodeRight.transform.position, target);
-
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                newDirection = "right";
-            }
-        }
-
-        return newDirection;
+            "up" => "down",
+            "down" => "up",
+            "left" => "right",
+            "right" => "left",
+            _ => dir
+        };
     }
 
     string GetRandomDirection()
     {
         List<string> possibleDirections = new List<string>();
         NodeController nodeController = movementController.currentNode.GetComponent<NodeController>();
+        string lastDirection = movementController.lastMovingDirection;
 
-        if (nodeController.canMoveDown && movementController.lastMovingDirection != "up")
-        {
+        // Добавляем только допустимые направления
+        if (nodeController.canMoveDown && lastDirection != "up")
             possibleDirections.Add("down");
-        }
-        if (nodeController.canMoveUp && movementController.lastMovingDirection != "down")
-        {
+        if (nodeController.canMoveUp && lastDirection != "down")
             possibleDirections.Add("up");
-        }
-        if (nodeController.canMoveRight && movementController.lastMovingDirection != "left")
-        {
+        if (nodeController.canMoveRight && lastDirection != "left")
             possibleDirections.Add("right");
-        }
-        if (nodeController.canMoveLeft && movementController.lastMovingDirection != "right")
-        {
+        if (nodeController.canMoveLeft && lastDirection != "right")
             possibleDirections.Add("left");
-        }
 
-        string direction = "";
-        int randomDirectionIndex = UnityEngine.Random.Range(0, possibleDirections.Count);
-        direction = possibleDirections[randomDirectionIndex];
-        return direction;
+        // Если нет возможных направлений (глухой тупик), разворачиваемся
+        if (possibleDirections.Count == 0)
+            return ReverseDirection(lastDirection);
+
+        // Выбираем случайное направление из доступных
+        return possibleDirections[UnityEngine.Random.Range(0, possibleDirections.Count)];
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -449,12 +523,28 @@ public class EnemyController : Sounds
 
             if (essenceManager != null && essenceManager.UseOrangeEssence())
             {
-                PlaySound(sounds[0]);
+                // PlaySound(sounds[0]);
+                
                 StartCoroutine(RespawnRandomGhost());
             }
             else
             {
-                PlaySound(sounds[1]);
+                //audioManager.PlaySFX(audioManager.deathPlayer);
+                //PlaySound(sounds[1]);
+                if (audioManager == null)
+                {
+                    audioManager = FindObjectOfType<AudioManager>();
+                }
+
+                // 2. Проверяем и воспроизводим звук с защитой от ошибок
+                if (audioManager != null && audioManager.deathPlayer != null)
+                {
+                    audioManager.PlaySFX(audioManager.deathPlayer);
+                }
+                else
+                {
+                    Debug.LogWarning("AudioManager или звук deathPlayer не найден!");
+                }
                 // Если у игрока нет оранжевой эссенции, игрок проигрывает
                 collision.gameObject.SetActive(false); // Отключаем объект игрока вместо уничтожения
                 if (gameManager.loserWindowByMonster != null)
@@ -495,77 +585,53 @@ public class EnemyController : Sounds
         Destroy(gameObject);
     }*/
 
-    
+
     public IEnumerator RespawnRandomGhost()
     {
         // 1. Фиксируем позицию
         Vector3 spawnPos = ghostNodeCenter.transform.position;
 
-        // 2. Деактивируем старого монстра (не уничтожаем!)
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        Collider2D collider = GetComponent<Collider2D>();
+        if (audioManager == null)
+        {
+            audioManager = FindObjectOfType<AudioManager>();
+        }
 
-        if (spriteRenderer != null) spriteRenderer.enabled = false;
-        if (collider != null) collider.enabled = false;
+        // 2. Проверяем и воспроизводим звук с защитой от ошибок
+        if (audioManager != null && audioManager.deathPlayer != null)
+        {
+            audioManager.PlaySFX(audioManager.deathEnemy);
+        }
+        else
+        {
+            Debug.LogWarning("AudioManager или звук deathPlayer не найден!");
+        }
+
+        // 2. Отключаем ВСЕ SpriteRenderer и Collider2D (включая дочерние объекты)
+        SpriteRenderer[] spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>(true);
+
+        foreach (var renderer in spriteRenderers)
+        {
+            renderer.enabled = false;
+        }
+        foreach (var collider in colliders)
+        {
+            collider.enabled = false;
+        }
 
         // 3. Ждём 2 секунды
         yield return new WaitForSeconds(2f);
 
+        // 4. Выбираем случайный тип призрака
         MonsterType randomType = (MonsterType)UnityEngine.Random.Range(0, 6);
-
         GameObject ghostPrefab = gameManager.GetGhostPrefab(randomType);
 
-        // 4. Берём рандомного монстра для спавна
-        GameObject newGhost = Instantiate(
-            ghostPrefab,
-            spawnPos,
-            Quaternion.identity
-        );
-
-        // 5. Принудительно включаем (на случай если префаб выключен)
+        // 5. Создаём нового призрака
+        GameObject newGhost = Instantiate(ghostPrefab, spawnPos, Quaternion.identity);
         newGhost.SetActive(true);
 
         // 6. Уничтожаем старый объект
         Destroy(gameObject);
     }
-
-
-
-    /*
-    public IEnumerator RespawnRandomGhost()
-    {
-        // 1. Фиксируем позицию спавна (центр)
-        Vector3 spawnPos = ghostNodeCenter.transform.position;
-
-        // 2. Отключаем визуал и коллайдер у старого монстра
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        Collider2D collider = GetComponent<Collider2D>();
-
-        if (spriteRenderer != null) spriteRenderer.enabled = false;
-        if (collider != null) collider.enabled = false;
-
-        // 3. Ждём 2 секунды перед респавном
-        yield return new WaitForSeconds(2f);
-
-        // 4. Берём КРАСНОГО монстра (вместо случайного)
-        GameObject newGhost = Instantiate(
-            gameManager.fireMonsterPrefab, // Используем прямое обращение к префабу
-            spawnPos,
-            Quaternion.identity
-        );
-
-        // 5. Настраиваем компоненты нового монстра
-        EnemyController newController = newGhost.GetComponent<EnemyController>();
-        if (newController != null)
-        {
-            newController.ghostNodeState = GhostNodeStatesEnum.movingInNodes;
-            newController.respawnState = GhostNodeStatesEnum.movingInNodes;
-            newController.movementController.currentNode = ghostNodeCenter;
-        }
-
-        // 6. Уничтожаем старый объект
-        Destroy(gameObject);
-    }
-    */
 
 }

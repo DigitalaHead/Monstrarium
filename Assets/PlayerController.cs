@@ -5,6 +5,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     MovementController movementController;
+    public SpriteRenderer sprite;
+
+    public Animator animator;
+
+    AudioManager audioManager;
     // Start is called before the first frame update
     void Start()
     {
@@ -13,6 +18,9 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
+        animator = GetComponentInChildren<Animator>();
+        sprite = GetComponentInChildren<SpriteRenderer>();
+
         movementController = GetComponent<MovementController>();
         movementController.lastMovingDirection = "right";
     }
@@ -20,6 +28,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        animator.SetBool("Moving", true);
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             movementController.SetDirection("left");
@@ -36,6 +45,32 @@ public class PlayerController : MonoBehaviour
         {
             movementController.SetDirection("down");
         }
+
+        bool flipX = false;
+        bool flipY = false;
+        if (movementController.lastMovingDirection == "right") 
+        {
+            animator.SetInteger("Direction", 0);
+        }
+        else if (movementController.lastMovingDirection == "left")
+        {
+            animator.SetInteger("Direction", 0);
+            flipX = true;
+
+        }
+        else if (movementController.lastMovingDirection == "up")
+        {
+            animator.SetInteger("Direction", 1);
+        }
+        else if (movementController.lastMovingDirection == "down")
+        {
+            animator.SetInteger("Direction", 1);
+            
+            flipY = true;
+        }
+
+        sprite.flipY = flipY;
+        sprite.flipX = flipX;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -44,8 +79,10 @@ public class PlayerController : MonoBehaviour
         if (essence != null)
         {
             EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
+
             if (essenceManager != null)
             {
+               
                 essenceManager.CollectEssence(essence.CreateEssence(), collision.gameObject);
             }
         }
