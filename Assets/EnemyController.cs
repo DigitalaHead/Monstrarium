@@ -452,27 +452,23 @@ public class EnemyController : Sounds
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            // EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
-            // if (essenceManager != null && essenceManager.TryKillMonster(monsterType))
-            // {
-            //     Debug.Log($"Монстр {monsterType} убит!");
-            //     PlaySound(sounds[0]);
-            //     Die(); // <-- вот так
-            // }
-            // else
-            // {
-            //     PlaySound(sounds[1]);
-            //     PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
-            //     if (playerController != null && !playerController.IsDead)
-            //     {
-            //         playerController.DieFromMonster();
-            //     }
-            //     StartCoroutine(ShowLoseWindowWithDelay());
-            // }
-
-            // ВРЕМЕННО: убиваем монстра при любом столкновении с игроком
-            Debug.Log($"Монстр {monsterType} убит (тест)!");
-            Die();
+            EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
+            if (essenceManager != null && essenceManager.TryKillMonster(monsterType))
+            {
+                Debug.Log($"Монстр {monsterType} убит!");
+                PlaySound(sounds[0]);
+                Die(); // <-- вот так
+            }
+            else
+            {
+                PlaySound(sounds[1]);
+                PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
+                if (playerController != null && !playerController.IsDead)
+                {
+                    playerController.DieFromMonster();
+                }
+                StartCoroutine(ShowLoseWindowWithDelay());
+            }
         }
     }
 
