@@ -6,10 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/menu.unity
-    guid: fc007a321461f8e49b037fa0d12f5cf8
-  - enabled: 1
-    path: Assets/Scenes/Monstrarium.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: "Assets/Scenes/\u0438\u0433\u0440\u043E\u0432\u043E\u0439 \u044D\u043A\u0440\u043D\u0430.unity"
+    guid: 19696f8db13e77d479b9ec58458371e3
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

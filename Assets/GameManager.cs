@@ -89,7 +89,7 @@ public class GameManager : Sounds
     void Start()
     {
         enemyController = FindFirstObjectByType<EnemyController>(); // Находим EnemyController в сцене
-        StartRandomSoundCycle();
+        //StartRandomSoundCycle();
     }
 
     public void StartRandomSoundCycle()

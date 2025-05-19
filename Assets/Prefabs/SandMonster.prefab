@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8872302363357595443
+--- !u!1 &2037004649397222951
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,44 +8,38 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5980064832619997550}
-  - component: {fileID: 7836091311642034556}
-  - component: {fileID: 7538103556766460123}
-  - component: {fileID: 1880412973116578492}
-  - component: {fileID: 5836196135617336578}
-  - component: {fileID: 6931487319428776958}
-  - component: {fileID: 3304220012484632740}
-  - component: {fileID: 3100949071727152364}
-  - component: {fileID: 3777316800247253172}
+  - component: {fileID: 4987229287383693503}
+  - component: {fileID: 4338381723182892118}
+  - component: {fileID: 8253828018280815156}
   m_Layer: 0
-  m_Name: SandMonster
-  m_TagString: Enemy
+  m_Name: SpriteSandMonster
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5980064832619997550
+--- !u!4 &4987229287383693503
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8872302363357595443}
+  m_GameObject: {fileID: 2037004649397222951}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 12, y: 12, z: 1}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 5345190973140326362}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &7836091311642034556
+--- !u!212 &4338381723182892118
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8872302363357595443}
+  m_GameObject: {fileID: 2037004649397222951}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -82,36 +76,97 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -8885037392154353940, guid: 73879a75cdf8bb043971d9c2b63b9e38, type: 3}
+  m_Sprite: {fileID: 5318929096828444115, guid: 6337cd203e6fdce4f9ca00f8920c7337, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.72, y: 3.32}
+  m_Size: {x: 0.42, y: 0.42}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!210 &7538103556766460123
+--- !u!95 &8253828018280815156
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037004649397222951}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9af51ee340c2cad429494710fba5142c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &6562092350623174042
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5345190973140326362}
+  - component: {fileID: 7495472212610259908}
+  - component: {fileID: 7317300507177243878}
+  - component: {fileID: 2877997367310426202}
+  - component: {fileID: 8122106306775407795}
+  - component: {fileID: 1839398198794139504}
+  - component: {fileID: 4881911445235101463}
+  - component: {fileID: 2438758244886491983}
+  m_Layer: 0
+  m_Name: SandMonster
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5345190973140326362
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6562092350623174042}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 953, y: 476, z: 0}
+  m_LocalScale: {x: 12, y: 12, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4987229287383693503}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!210 &7495472212610259908
 SortingGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8872302363357595443}
+  m_GameObject: {fileID: 6562092350623174042}
   m_Enabled: 1
   m_SortingLayerID: -389201115
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_SortAtRoot: 0
---- !u!114 &1880412973116578492
+--- !u!114 &7317300507177243878
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8872302363357595443}
+  m_GameObject: {fileID: 6562092350623174042}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b9cc8c57355c86f4ab9f7678a3af1b17, type: 3}
@@ -119,29 +174,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
   currentNode: {fileID: 0}
-  speed: 200
+  speed: 150
   direction: 
   lastMovingDirection: 
   canWarp: 1
   isGhost: 1
---- !u!114 &5836196135617336578
+--- !u!114 &2877997367310426202
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8872302363357595443}
+  m_GameObject: {fileID: 6562092350623174042}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93375840b095f1d44b12f379e6cc6731, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sounds:
-  - {fileID: 8300000, guid: 25e7e1ddc35aab14b90ed54d36b2e908, type: 3}
-  - {fileID: 8300000, guid: fd097aea587c97648ab12a5e47944e2d, type: 3}
   CollectionCombinations: 1
   clone: 1
+  spriteRight: 0
   gameManager: {fileID: 0}
+  animator: {fileID: 0}
   ghostNodeState: 0
   respawnState: 0
   monsterType: 3
@@ -156,13 +210,14 @@ MonoBehaviour:
   isFrightened: 0
   scatterNodes: []
   scatterNodeIndex: 0
---- !u!61 &6931487319428776958
+  sprite: {fileID: 0}
+--- !u!61 &8122106306775407795
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8872302363357595443}
+  m_GameObject: {fileID: 6562092350623174042}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -194,7 +249,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.22, y: 3.12}
+    oldSize: {x: 2.82, y: 1.82}
     newSize: {x: 2.72, y: 3.32}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -202,14 +257,14 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.2768003, y: 1.2310685}
   m_EdgeRadius: 0
---- !u!50 &3304220012484632740
+--- !u!50 &1839398198794139504
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8872302363357595443}
+  m_GameObject: {fileID: 6562092350623174042}
   m_BodyType: 2
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
@@ -229,25 +284,25 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &3100949071727152364
+--- !u!114 &4881911445235101463
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8872302363357595443}
+  m_GameObject: {fileID: 6562092350623174042}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 25d68c034a508284c8f28dc9d093c955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!82 &3777316800247253172
+--- !u!82 &2438758244886491983
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8872302363357595443}
+  m_GameObject: {fileID: 6562092350623174042}
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}

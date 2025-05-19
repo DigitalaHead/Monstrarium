@@ -117,4 +117,18 @@ public class NodeController : MonoBehaviour
         }
 
     }
+
+    private bool IsDeadEnd(NodeController node)
+    {
+        if (node == null) return false;
+
+        // Узел считается тупиком, если из него ведёт только один путь
+        int availableDirections = 0;
+        if (node.canMoveLeft) availableDirections++;
+        if (node.canMoveRight) availableDirections++;
+        if (node.canMoveUp) availableDirections++;
+        if (node.canMoveDown) availableDirections++;
+
+        return availableDirections == 1;
+    }
 }
