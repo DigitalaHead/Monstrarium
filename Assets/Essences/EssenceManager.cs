@@ -225,6 +225,7 @@ public class EssenceManager : MonoBehaviour
             {
                 animator.Rebind();
                 animator.Update(0f);
+                animator.SetTrigger("PlayEffect");
             }
         }
     }
@@ -233,12 +234,12 @@ public class EssenceManager : MonoBehaviour
     {
         switch (color)
         {
-            case EssenceColor.Orange:   orangeEffect.SetActive(false); break;
-            case EssenceColor.Green:    greenEffect.SetActive(false); break;
-            case EssenceColor.Purple:   purpleEffect.SetActive(false); break;
+            case EssenceColor.Orange: orangeEffect.SetActive(false); break;
+            case EssenceColor.Green: greenEffect.SetActive(false); break;
+            case EssenceColor.Purple: purpleEffect.SetActive(false); break;
             case EssenceColor.Burgundy: burgundyEffect.SetActive(false); break;
-            case EssenceColor.Mustard:  mustardEffect.SetActive(false); break;
-            case EssenceColor.Murena:   murenaEffect.SetActive(false); break;
+            case EssenceColor.Mustard: mustardEffect.SetActive(false); break;
+            case EssenceColor.Murena: murenaEffect.SetActive(false); break;
         }
     }
 
@@ -276,7 +277,7 @@ public class EssenceManager : MonoBehaviour
             essenceCounts[color2]--;
             essenceCounts[resultColor]++;
             Debug.Log($"Создано зелье: {resultColor}");
-            DisableEssenceEffect(color1);
+            
             ActivateEssenceEffect(resultColor);
             OnEssenceChanged?.Invoke();
         }

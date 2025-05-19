@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     MovementController movementController;
     private SpriteRenderer spriteRenderer;
+    private Animator animator; // Добавляем Animator
 
     public Sprite deadBodySprite; // Лежачий спрайт героя
     public GameObject spiritPrefab; // Префаб духа (с нужным спрайтом)
@@ -21,6 +22,7 @@ public class PlayerController : MonoBehaviour
     {
         movementController = GetComponent<MovementController>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>(); // Инициализируем Animator
     }
 
     // Update is called once per frame
@@ -177,5 +179,7 @@ public class PlayerController : MonoBehaviour
             gameManager.loserWindowByIncorrectEssence.SetActive(true);
             Time.timeScale = 0;
         }
+
+        animator.SetTrigger("PlayEffect"); // Воспроизводим эффект смерти
     }
 }
