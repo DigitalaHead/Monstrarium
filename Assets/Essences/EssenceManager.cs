@@ -23,7 +23,13 @@ public class EssenceManager : MonoBehaviour
 
     private EssenceSpawner essenceSpawner;
 
-    public GameObject effect; // Ссылка на объект эффекта
+
+    public GameObject orangeEffect;
+    public GameObject greenEffect;
+    public GameObject purpleEffect;
+    public GameObject burgundyEffect;
+    public GameObject mustardEffect;
+    public GameObject murenaEffect;
 
     public PlayerController player;
 
@@ -113,6 +119,10 @@ public class EssenceManager : MonoBehaviour
         if (essenceCounts[color] > 0)
         {
             essenceCounts[color]--;
+            if (essenceCounts[color] == 0)
+            {
+                DisableEssenceEffect(color);
+            }
             OnEssenceChanged?.Invoke(); // Обновляем UI
             return true;
         }
@@ -126,6 +136,10 @@ public class EssenceManager : MonoBehaviour
         if (essenceCounts[requiredEssence] > 0)
         {
             essenceCounts[requiredEssence]--;
+            if (essenceCounts[requiredEssence] == 0)
+            {
+                DisableEssenceEffect(requiredEssence);
+            }
             Debug.Log($"Использовано зелье {requiredEssence} для убийства монстра {monsterType}.");
 
             // Добавляем 50 очков за убийство монстра
@@ -145,9 +159,9 @@ public class EssenceManager : MonoBehaviour
         {
             case EnemyController.MonsterType.red:
                 return EssenceColor.Orange; // Оранжевое зелье убивает огненного монстра
-            case EnemyController.MonsterType.blue:
+            case EnemyController.MonsterType.aqua:
                 return EssenceColor.Murena; // Мурена убивает водяного монстра
-            case EnemyController.MonsterType.pink:
+            case EnemyController.MonsterType.wood:
                 return EssenceColor.Green; // Зеленое зелье убивает древесного монстра
             case EnemyController.MonsterType.electro:
                 return EssenceColor.Purple; // Фиолетовое зелье убивает электрического монстра
@@ -161,32 +175,44 @@ public class EssenceManager : MonoBehaviour
         }
     }
 
-    private void ActivateEffect()
+    private void ActivateEssenceEffect(EssenceColor color)
     {
+        Debug.Log("ActivateEssenceEffect вызван для " + color);
+        GameObject effect = null;
+        switch (color)
+        {
+            case EssenceColor.Orange:   effect = orangeEffect; break;
+            case EssenceColor.Green:    effect = greenEffect; break;
+            case EssenceColor.Purple:   effect = purpleEffect; break;
+            case EssenceColor.Burgundy: effect = burgundyEffect; break;
+            case EssenceColor.Mustard:  effect = mustardEffect; break;
+            case EssenceColor.Murena:   effect = murenaEffect; break;
+            default:
+                Debug.LogWarning("Нет эффекта для цвета: " + color);
+                break;
+        }
         if (effect != null)
         {
-            effect.SetActive(true); // Включаем объект эффекта
-            Animator animator = effect.GetComponent<Animator>();
+            effect.SetActive(true);
+            var animator = effect.GetComponent<Animator>();
             if (animator != null)
             {
-                animator.SetTrigger("PlayEffect"); // Запускаем анимацию
+                animator.Rebind();
+                animator.Update(0f);
             }
-
-            // Отключаем эффект через 2 секунды
-            StartCoroutine(DisableEffectAfterDelay(2f));
-        }
-        else
-        {
-            Debug.LogWarning("Объект эффекта не назначен!");
         }
     }
 
-    private System.Collections.IEnumerator DisableEffectAfterDelay(float delay)
+    private void DisableEssenceEffect(EssenceColor color)
     {
-        yield return new WaitForSeconds(delay);
-        if (effect != null)
+        switch (color)
         {
-            effect.SetActive(false); // Отключаем объект эффекта
+            case EssenceColor.Orange:   orangeEffect.SetActive(false); break;
+            case EssenceColor.Green:    greenEffect.SetActive(false); break;
+            case EssenceColor.Purple:   purpleEffect.SetActive(false); break;
+            case EssenceColor.Burgundy: burgundyEffect.SetActive(false); break;
+            case EssenceColor.Mustard:  mustardEffect.SetActive(false); break;
+            case EssenceColor.Murena:   murenaEffect.SetActive(false); break;
         }
     }
 
@@ -224,6 +250,8 @@ public class EssenceManager : MonoBehaviour
             essenceCounts[color2]--;
             essenceCounts[resultColor]++;
             Debug.Log($"Создано зелье: {resultColor}");
+            DisableEssenceEffect(color1);
+            ActivateEssenceEffect(resultColor);
             OnEssenceChanged?.Invoke();
         }
     }
@@ -234,6 +262,12 @@ public class EssenceManager : MonoBehaviour
         {
             essenceCounts[color] = 0; // Обнуляем количество всех эссенций
         }
+        DisableEssenceEffect(EssenceColor.Orange);
+        DisableEssenceEffect(EssenceColor.Green);  
+        DisableEssenceEffect(EssenceColor.Purple);
+        DisableEssenceEffect(EssenceColor.Burgundy);
+        DisableEssenceEffect(EssenceColor.Mustard);
+        DisableEssenceEffect(EssenceColor.Murena);
         Debug.Log("Все эссенции и зелья очищены.");
         OnEssenceChanged?.Invoke();
     }

@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
 
     public bool IsDead => isDead; // Свойство для проверки состояния игрока
 
+
     // Start is called before the first frame update
     void Start()
     {

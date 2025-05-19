@@ -34,8 +34,8 @@ public class EnemyController : Sounds
     public enum MonsterType
     {
         red,       // Огненный
-        blue,      // Водяной
-        pink,      // Древесный
+        aqua,      // Водяной
+        wood,      // Древесный
         electro,    // Электрический
         sand,      // Песчаный
         ceramic    // Керамический
@@ -76,8 +76,8 @@ public class EnemyController : Sounds
             // Устанавливаем состояние "respawning" для корректного выхода
             // ghostNodeState = GhostNodeStatesEnum.respawning;
             //respawnState = GhostNodeStatesEnum.movingInNodes; // Сразу перейдём в режим патрулирования
-            readyToLeaveHome =true;
-            
+            readyToLeaveHome = true;
+
 
             // Начинаем движение из центра
             movementController.currentNode = ghostNodeCenter;
@@ -89,7 +89,7 @@ public class EnemyController : Sounds
 
         }
 
-        else 
+        else
         {
             if (monsterType == MonsterType.red)
             {
@@ -99,13 +99,13 @@ public class EnemyController : Sounds
                 readyToLeaveHome = true;
 
             }
-            else if (monsterType == MonsterType.pink)
+            else if (monsterType == MonsterType.wood)
             {
                 ghostNodeState = GhostNodeStatesEnum.centerNode;
                 startingNode = ghostNodeCenter;
                 respawnState = GhostNodeStatesEnum.centerNode;
             }
-            else if (monsterType == MonsterType.blue)
+            else if (monsterType == MonsterType.aqua)
             {
                 ghostNodeState = GhostNodeStatesEnum.leftNode;
                 respawnState = GhostNodeStatesEnum.leftNode;
@@ -135,14 +135,14 @@ public class EnemyController : Sounds
 
     public void ReachedCenterOfNode(NodeController nodeController)
     {
-        
+
         if (ghostNodeState == GhostNodeStatesEnum.movingInNodes)
         {
             //режим разброса для указания по нему точного маршрута
             if (gameManager.currentGhostMode == GameManager.GhostMode.scatter)
             {
 
-                if(transform.position.x == scatterNodes[scatterNodeIndex].transform.position.x && transform.position.y == scatterNodes[scatterNodeIndex].transform.position.y)
+                if (transform.position.x == scatterNodes[scatterNodeIndex].transform.position.x && transform.position.y == scatterNodes[scatterNodeIndex].transform.position.y)
                 {
                     scatterNodeIndex++;
 
@@ -154,7 +154,7 @@ public class EnemyController : Sounds
 
                 string direction = GetClosestDirection(scatterNodes[scatterNodeIndex].transform.position);
                 movementController.SetDirection(direction);
-               
+
             }
 
             //режим неопределенности
@@ -172,12 +172,12 @@ public class EnemyController : Sounds
                     DetermineRedGhostDirection();
                 }
 
-                else if (monsterType == MonsterType.pink)
+                else if (monsterType == MonsterType.wood)
                 {
                     DeterminePinkGhostDirection();
                 }
 
-                else if (monsterType == MonsterType.blue)
+                else if (monsterType == MonsterType.aqua)
                 {
                     DetermineBlueGhostDirection();
                 }
@@ -188,7 +188,7 @@ public class EnemyController : Sounds
                 }
 
             }
-            
+
         }
         else if (ghostNodeState == GhostNodeStatesEnum.respawning)
         {
@@ -330,7 +330,7 @@ public class EnemyController : Sounds
         {
             target.x -= distanceBetWeenNode * 5;
         }
-        else if (playerDirection == "right") 
+        else if (playerDirection == "right")
         {
             target.x += distanceBetWeenNode * 5;
         }
@@ -452,27 +452,27 @@ public class EnemyController : Sounds
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
+            // EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
+            // if (essenceManager != null && essenceManager.TryKillMonster(monsterType))
+            // {
+            //     Debug.Log($"Монстр {monsterType} убит!");
+            //     PlaySound(sounds[0]);
+            //     Die(); // <-- вот так
+            // }
+            // else
+            // {
+            //     PlaySound(sounds[1]);
+            //     PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
+            //     if (playerController != null && !playerController.IsDead)
+            //     {
+            //         playerController.DieFromMonster();
+            //     }
+            //     StartCoroutine(ShowLoseWindowWithDelay());
+            // }
 
-            if (essenceManager != null && essenceManager.TryKillMonster(monsterType))
-            {
-                Debug.Log($"Монстр {monsterType} убит!");
-                PlaySound(sounds[0]);
-                Destroy(gameObject);
-            }
-            else
-            {
-              //  Debug.Log($"Игрок не имеет подходящего зелья для убийства {monsterType}!");
-                PlaySound(sounds[1]);
-
-                // Получаем PlayerController и меняем спрайт на смерть
-                PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
-                if (playerController != null && !playerController.IsDead)
-                {
-                    playerController.DieFromMonster();
-                }
-                StartCoroutine(ShowLoseWindowWithDelay());
-            }
+            // ВРЕМЕННО: убиваем монстра при любом столкновении с игроком
+            Debug.Log($"Монстр {monsterType} убит (тест)!");
+            Die();
         }
     }
 
@@ -502,7 +502,7 @@ public class EnemyController : Sounds
         Destroy(gameObject);
     }*/
 
-    
+
     public IEnumerator RespawnRandomGhost()
     {
         // 1. Фиксируем позицию
@@ -531,9 +531,6 @@ public class EnemyController : Sounds
 
         // 5. Принудительно включаем (на случай если префаб выключен)
         newGhost.SetActive(true);
-
-        // 6. Уничтожаем старый объект
-        Destroy(gameObject);
     }
 
 
@@ -583,5 +580,23 @@ public class EnemyController : Sounds
         {
             gameManager.loserWindowByMonster.SetActive(true);
         }
+    }
+
+    public void Die()
+    {
+        Animator animator = GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.SetTrigger("die");
+        }
+        // Отключить движение, коллайдер и т.п.
+        if (movementController != null)
+            movementController.enabled = false;
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = false;
+
+        // Удалить объект после проигрывания анимации (например, через 0.6 сек)
+        Destroy(gameObject, 1.2f);
     }
 }
