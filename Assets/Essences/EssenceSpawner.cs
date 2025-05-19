@@ -11,6 +11,9 @@ public class EssenceSpawner : MonoBehaviour
     private GameObject blueEssencePrefab; // Префаб синей эссенции
     [SerializeField]
     private GameObject blackEssencePrefab; // Префаб черной эссенции
+
+    [SerializeField]
+    private GameObject shieldPrefab; // Префаб черной эссенции
     [SerializeField]
     private Transform essencesParent;
     [SerializeField]
@@ -23,10 +26,19 @@ public class EssenceSpawner : MonoBehaviour
 
     private GameObject currentBlackEssence; // Ссылка на текущую черную эссенцию
 
+    [SerializeField]
+    private float shieldSpawnInterval = 60f;
+
+    private GameObject currentShieldEssence;
+
+    [SerializeField]
+    private Transform shieldSpawnPoint;
+
     void Start()
     {
         InitializeEssences();
         StartCoroutine(SpawnBlackEssenceRoutine());
+        StartCoroutine(SpawnShieldRoutine());
     }
 
     // Инициализация эссенций на старте
@@ -132,23 +144,42 @@ public class EssenceSpawner : MonoBehaviour
 
     // Корутин для спауна черной эссенции
     private IEnumerator SpawnBlackEssenceRoutine()
-{
-    while (true)
     {
-        // Ждём заданный интервал
-        yield return new WaitForSeconds(blackEssenceSpawnInterval);
+        while (true)
+        {
+            // Ждём заданный интервал
+            yield return new WaitForSeconds(blackEssenceSpawnInterval);
 
-        // Если черной эссенции нет, создаём её
-        if (blackEssencePrefab != null && blackEssenceSpawnPoint != null)
-        {
-            GameObject blackEssence = Instantiate(blackEssencePrefab, blackEssenceSpawnPoint.position, Quaternion.identity, essencesParent);
-        }
-        else
-        {
-            Debug.LogError("blackEssencePrefab или blackEssenceSpawnPoint не назначены!");
+            // Если черной эссенции нет, создаём её
+            if (blackEssencePrefab != null && blackEssenceSpawnPoint != null)
+            {
+                GameObject blackEssence = Instantiate(blackEssencePrefab, blackEssenceSpawnPoint.position, Quaternion.identity, essencesParent);
+            }
+            else
+            {
+                Debug.LogError("blackEssencePrefab или blackEssenceSpawnPoint не назначены!");
+            }
         }
     }
-}
+
+    private IEnumerator SpawnShieldRoutine()
+    {
+        while (true)
+        {
+            // Ждём заданный интервал
+            yield return new WaitForSeconds(shieldSpawnInterval);
+
+            // Если черной эссенции нет, создаём её
+            if (shieldPrefab != null && shieldSpawnPoint != null)
+            {
+                GameObject shield = Instantiate(shieldPrefab,shieldSpawnPoint.position, Quaternion.identity, essencesParent);
+            }
+            else
+            {
+                Debug.LogError("shieldPrefab или shieldSpawnPoint не назначены!");
+            }
+        }
+    }
 
     // Возвращает случайный префаб эссенции
     private GameObject GetRandomEssencePrefab()

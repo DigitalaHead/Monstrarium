@@ -33,10 +33,28 @@ public class EssenceManager : MonoBehaviour
 
     public PlayerController player;
 
+    private bool shieldActive = false;
+    private float shieldTimer = 0f;
+    public bool IsShieldActive => shieldActive;
+
     void Start()
     {
         essenceSpawner = FindFirstObjectByType<EssenceSpawner>();
         player = FindFirstObjectByType<PlayerController>();
+    }
+
+    void Update()
+    {
+        if (shieldActive)
+        {
+            shieldTimer -= Time.deltaTime;
+            if (shieldTimer <= 0f)
+            {
+                shieldActive = false;
+                Debug.Log("Щит закончился!");
+                // Здесь можно отключить визуальный эффект щита, если есть
+            }
+        }
     }
 
     public void CollectEssence(Essence essence, GameObject obj)
@@ -52,7 +70,15 @@ public class EssenceManager : MonoBehaviour
             OnEssenceChanged?.Invoke(); // Обновляем UI
             return;
         }
-
+        if (essence.color == EssenceColor.Shield)
+        {
+            Debug.Log("Щит собран! Игрок неуязвим 10 секунд.");
+            shieldActive = true;
+            shieldTimer = 10f;
+            Destroy(obj); // Удаляем щит с карты
+            OnEssenceChanged?.Invoke();
+            return;
+        }
         // Проверяем, есть ли у игрока сложное зелье (бордовое, горчичное или мурена)
         if (essenceCounts[EssenceColor.Burgundy] > 0 || 
             essenceCounts[EssenceColor.Mustard] > 0 || 

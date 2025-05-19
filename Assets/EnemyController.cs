@@ -453,6 +453,12 @@ public class EnemyController : Sounds
         if (collision.gameObject.CompareTag("Player"))
         {
             EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
+            if (essenceManager != null && essenceManager.IsShieldActive)
+            {
+                Debug.Log("Столкновение с игроком под щитом — монстр не атакует.");
+                return;
+            }
+
             if (essenceManager != null && essenceManager.TryKillMonster(monsterType))
             {
                 Debug.Log($"Монстр {monsterType} убит!");
