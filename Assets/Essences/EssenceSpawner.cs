@@ -8,14 +8,37 @@ public class EssenceSpawner : MonoBehaviour
     [SerializeField]
     private GameObject yellowEssencePrefab;
     [SerializeField]
+    private GameObject blueEssencePrefab; // Префаб синей эссенции
+    [SerializeField]
+    private GameObject blackEssencePrefab; // Префаб черной эссенции
+
+    [SerializeField]
+    private GameObject shieldPrefab; // Префаб черной эссенции
+    [SerializeField]
     private Transform essencesParent;
+    [SerializeField]
+    private Transform blackEssenceSpawnPoint; // Точка появления черной эссенции
 
     [SerializeField]
     private float respawnTime = 5f; // Время до респауна эссенции
+    [SerializeField]
+    private float blackEssenceSpawnInterval = 60f; // Интервал появления черной эссенции
+
+    private GameObject currentBlackEssence; // Ссылка на текущую черную эссенцию
+
+    [SerializeField]
+    private float shieldSpawnInterval = 60f;
+
+    private GameObject currentShieldEssence;
+
+    [SerializeField]
+    private Transform shieldSpawnPoint;
 
     void Start()
     {
         InitializeEssences();
+        StartCoroutine(SpawnBlackEssenceRoutine());
+        StartCoroutine(SpawnShieldRoutine());
     }
 
     // Инициализация эссенций на старте
@@ -24,6 +47,7 @@ public class EssenceSpawner : MonoBehaviour
         // Флаги для проверки наличия эссенций каждого цвета
         bool hasRed = false;
         bool hasYellow = false;
+        bool hasBlue = false;
 
         // Проверяем существующие эссенции
         for (int i = essencesParent.childCount - 1; i >= 0; i--)
@@ -37,6 +61,8 @@ public class EssenceSpawner : MonoBehaviour
                     hasRed = true;
                 else if (essenceController.Color == EssenceColor.Yellow)
                     hasYellow = true;
+                else if (essenceController.Color == EssenceColor.Blue)
+                    hasBlue = true;
             }
         }
 
@@ -52,6 +78,13 @@ public class EssenceSpawner : MonoBehaviour
         {
             Instantiate(yellowEssencePrefab, GetRandomPosition(), Quaternion.identity, essencesParent);
             Debug.Log("Добавлена жёлтая эссенция, так как её не было на карте.");
+        }
+
+        // Убедимся, что на карте есть хотя бы одна синяя эссенция
+        if (!hasBlue)
+        {
+            Instantiate(blueEssencePrefab, GetRandomPosition(), Quaternion.identity, essencesParent);
+            Debug.Log("Добавлена синяя эссенция, так как её не было на карте.");
         }
     }
 
@@ -109,18 +142,58 @@ public class EssenceSpawner : MonoBehaviour
         SpawnEssences(position); // Спауним новую эссенцию
     }
 
+    // Корутин для спауна черной эссенции
+    private IEnumerator SpawnBlackEssenceRoutine()
+    {
+        while (true)
+        {
+            // Ждём заданный интервал
+            yield return new WaitForSeconds(blackEssenceSpawnInterval);
+
+            // Если черной эссенции нет, создаём её
+            if (blackEssencePrefab != null && blackEssenceSpawnPoint != null)
+            {
+                GameObject blackEssence = Instantiate(blackEssencePrefab, blackEssenceSpawnPoint.position, Quaternion.identity, essencesParent);
+            }
+            else
+            {
+                Debug.LogError("blackEssencePrefab или blackEssenceSpawnPoint не назначены!");
+            }
+        }
+    }
+
+    private IEnumerator SpawnShieldRoutine()
+    {
+        while (true)
+        {
+            // Ждём заданный интервал
+            yield return new WaitForSeconds(shieldSpawnInterval);
+
+            // Если черной эссенции нет, создаём её
+            if (shieldPrefab != null && shieldSpawnPoint != null)
+            {
+                GameObject shield = Instantiate(shieldPrefab,shieldSpawnPoint.position, Quaternion.identity, essencesParent);
+            }
+            else
+            {
+                Debug.LogError("shieldPrefab или shieldSpawnPoint не назначены!");
+            }
+        }
+    }
+
     // Возвращает случайный префаб эссенции
     private GameObject GetRandomEssencePrefab()
     {
-        if (redEssencePrefab == null || yellowEssencePrefab == null)
+        if (redEssencePrefab == null || yellowEssencePrefab == null || blueEssencePrefab == null)
         {
             Debug.LogError("Префабы эссенций не назначены в инспекторе!");
             return null;
         }
 
-        int randomIndex = Random.Range(0, 2);
+        int randomIndex = Random.Range(0, 3); // Убираем синюю эссенцию из выбора
         if (randomIndex == 0) return redEssencePrefab;
-        return yellowEssencePrefab;
+        if (randomIndex == 1) return yellowEssencePrefab;
+        return blueEssencePrefab;
     }
 
     // Возвращает случайную позицию в пределах родительского объекта

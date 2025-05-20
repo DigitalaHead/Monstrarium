@@ -15,29 +15,29 @@ public class AudioManager : MonoBehaviour
     public AudioClip background;
     public AudioClip deathPlayer;
     public AudioClip deathEnemy;
-    public AudioClip сollectedPotion;
-    public AudioClip сollectedEssence;
+    public AudioClip CollectedPotion;
+    public AudioClip CollectedEssence;
 
     [Header("Random Sounds")]
-    public AudioClip[] randomSounds; // Добавьте сюда 4 звука через инспектор
-    public float soundInterval = 15f; // Интервал в секундах
+    public AudioClip[] randomSounds; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 4 пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    public float soundInterval = 15f; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
     private Coroutine soundRoutine;
 
     private void Start()
     {
-        // Загружаем настройки (значение по умолчанию 0.7f если нет сохраненных)
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0.7f пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
         MusicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 0.7f);
         SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume", 0.7f);
 
-        // Применяем настройки
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         musicSource.volume = MusicSlider.value;
         SFXSource.volume = SFXSlider.value;
 
         musicSource.clip = background;
         musicSource.Play();
 
-        // Запускаем воспроизведение случайных звуков
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         soundRoutine = StartCoroutine(PlayRandomSoundsRoutine());
     }
 
@@ -49,7 +49,7 @@ public class AudioManager : MonoBehaviour
 
             if (randomSounds != null && randomSounds.Length > 0)
             {
-                // Выбираем случайный звук
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
                 AudioClip randomClip = randomSounds[UnityEngine.Random.Range(0, randomSounds.Length)];
                 PlaySFX(randomClip);
             }
@@ -79,12 +79,12 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // Для изменения интервала во время игры
+    // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
     public void SetSoundInterval(float newInterval)
     {
         soundInterval = newInterval;
 
-        // Перезапускаем корутину с новым интервалом
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         if (soundRoutine != null)
         {
             StopCoroutine(soundRoutine);

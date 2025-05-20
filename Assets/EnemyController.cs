@@ -40,10 +40,12 @@ public class EnemyController : MonoBehaviour
 
     public enum MonsterType
     {
-        red,
-        blue,
-        pink,
-        orange
+        red,       // Огненный
+        aqua,      // Водяной
+        wood,      // Древесный
+        electro,    // Электрический
+        sand,      // Песчаный
+        ceramic    // Керамический
     }
 
     public MonsterType monsterType;
@@ -109,19 +111,19 @@ public class EnemyController : MonoBehaviour
                 readyToLeaveHome = true;
 
             }
-            else if (monsterType == MonsterType.pink)
+            else if (monsterType == MonsterType.wood)
             {
                 ghostNodeState = GhostNodeStatesEnum.centerNode;
                 startingNode = ghostNodeCenter;
                 respawnState = GhostNodeStatesEnum.centerNode;
             }
-            else if (monsterType == MonsterType.blue)
+            else if (monsterType == MonsterType.aqua)
             {
                 ghostNodeState = GhostNodeStatesEnum.leftNode;
                 respawnState = GhostNodeStatesEnum.leftNode;
                 startingNode = ghostNodeLeft;
             }
-            else if (monsterType == MonsterType.orange)
+            else if (monsterType == MonsterType.electro)
             {
                 ghostNodeState = GhostNodeStatesEnum.rightNode;
                 respawnState = GhostNodeStatesEnum.rightNode;
@@ -150,14 +152,14 @@ public class EnemyController : MonoBehaviour
 
         if (spriteRight)
         {
-           // if (movementController.lastMovingDirection == "right")
-           // {
+            // if (movementController.lastMovingDirection == "right")
+            // {
             //    animator.SetBool("Moving", true);
-           // }
+            // }
 
             if (movementController.lastMovingDirection == "left")
             {
-               // animator.SetBool("Moving", true);
+                // animator.SetBool("Moving", true);
                 flipX = true;
             }
         }
@@ -165,8 +167,8 @@ public class EnemyController : MonoBehaviour
         {
             //if (movementController.lastMovingDirection == "left")
             //{
-              //  animator.SetBool("Moving", true);
-           // }
+            //  animator.SetBool("Moving", true);
+            // }
 
             if (movementController.lastMovingDirection == "right")
             {
@@ -231,17 +233,17 @@ public class EnemyController : MonoBehaviour
                     DetermineRedGhostDirection();
                 }
 
-                else if (monsterType == MonsterType.pink)
+                else if (monsterType == MonsterType.wood)
                 {
                     DeterminePinkGhostDirection();
                 }
 
-                else if (monsterType == MonsterType.blue)
+                else if (monsterType == MonsterType.aqua)
                 {
                     DetermineBlueGhostDirection();
                 }
 
-                else if (monsterType == MonsterType.orange)
+                else if (monsterType == MonsterType.electro)
                 {
                     DetermineOrangeGhostDirection();
                 }
@@ -520,23 +522,26 @@ public class EnemyController : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             EssenceManager essenceManager = FindFirstObjectByType<EssenceManager>();
-
-            if (essenceManager != null && essenceManager.UseOrangeEssence())
+            if (essenceManager != null && essenceManager.IsShieldActive)
             {
+                Debug.Log("Столкновение с игроком под щитом — монстр не атакует.");
+                return;
+            }
+
+            if (essenceManager != null && essenceManager.TryKillMonster(monsterType))
+            {
+                Debug.Log($"Монстр {monsterType} убит!");
+                // Можно проиграть звук убийства монстра, если нужно:
                 // PlaySound(sounds[0]);
-                
                 StartCoroutine(RespawnRandomGhost());
+                Die();
             }
             else
             {
-                //audioManager.PlaySFX(audioManager.deathPlayer);
-                //PlaySound(sounds[1]);
                 if (audioManager == null)
                 {
                     audioManager = FindObjectOfType<AudioManager>();
                 }
-
-                // 2. Проверяем и воспроизводим звук с защитой от ошибок
                 if (audioManager != null && audioManager.deathPlayer != null)
                 {
                     audioManager.PlaySFX(audioManager.deathPlayer);
@@ -545,16 +550,13 @@ public class EnemyController : MonoBehaviour
                 {
                     Debug.LogWarning("AudioManager или звук deathPlayer не найден!");
                 }
-                // Если у игрока нет оранжевой эссенции, игрок проигрывает
-                collision.gameObject.SetActive(false); // Отключаем объект игрока вместо уничтожения
-                if (gameManager.loserWindowByMonster != null)
+
+                PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
+                if (playerController != null && !playerController.IsDead)
                 {
-                    gameManager.loserWindowByMonster.SetActive(true); // Показываем окно поражения
+                    playerController.DieFromMonster();
                 }
-                else
-                {
-                    Debug.LogWarning("Окно поражения не назначено в инспекторе!");
-                }
+                StartCoroutine(ShowLoseWindowWithDelay());
             }
         }
     }
@@ -629,9 +631,70 @@ public class EnemyController : MonoBehaviour
         // 5. Создаём нового призрака
         GameObject newGhost = Instantiate(ghostPrefab, spawnPos, Quaternion.identity);
         newGhost.SetActive(true);
+    }
+
+    /*
+    public IEnumerator RespawnRandomGhost()
+    {
+        // 1. Фиксируем позицию спавна (центр)
+        Vector3 spawnPos = ghostNodeCenter.transform.position;
+
+        // 2. Отключаем визуал и коллайдер у старого монстра
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        Collider2D collider = GetComponent<Collider2D>();
+
+        if (spriteRenderer != null) spriteRenderer.enabled = false;
+        if (collider != null) collider.enabled = false;
+
+        // 3. Ждём 2 секунды перед респавном
+        yield return new WaitForSeconds(2f);
+
+        // 4. Берём КРАСНОГО монстра (вместо случайного)
+        GameObject newGhost = Instantiate(
+            gameManager.fireMonsterPrefab, // Используем прямое обращение к префабу
+            spawnPos,
+            Quaternion.identity
+        );
+
+        // 5. Настраиваем компоненты нового монстра
+        EnemyController newController = newGhost.GetComponent<EnemyController>();
+        if (newController != null)
+        {
+            newController.ghostNodeState = GhostNodeStatesEnum.movingInNodes;
+            newController.respawnState = GhostNodeStatesEnum.movingInNodes;
+            newController.movementController.currentNode = ghostNodeCenter;
+        }
 
         // 6. Уничтожаем старый объект
         Destroy(gameObject);
     }
+    */
 
+    private IEnumerator ShowLoseWindowWithDelay()
+    {
+        yield return new WaitForSeconds(3f); // Ждём 3 секунды
+
+        if (gameManager.loserWindowByMonster != null)
+        {
+            gameManager.loserWindowByMonster.SetActive(true);
+        }
+    }
+
+    public void Die()
+    {
+        Animator animator = GetComponent<Animator>();
+        if (animator != null)
+        {
+            animator.SetTrigger("die");
+        }
+        // Отключить движение, коллайдер и т.п.
+        if (movementController != null)
+            movementController.enabled = false;
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = false;
+
+        // Удалить объект после проигрывания анимации (например, через 0.6 сек)
+        Destroy(gameObject, 1.2f);
+    }
 }
