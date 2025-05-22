@@ -19,11 +19,13 @@ public class GameManager : Sounds
     public GameObject ghostNodeStart;
     public GameObject ghostNodeCenter;
 
+
     public GameObject redGhost;
     public GameObject pinkGhost;
     public GameObject blueGhost;
     public GameObject orangeGhost;
 
+    public GameObject simpleGhostPrefab;
     [Header("Ghost Prefabs")]
     public GameObject fireMonsterPrefab;
     public GameObject aquaMonsterPrefab;

@@ -72,7 +72,8 @@ public class PlayerController : MonoBehaviour
             flipX = true;
 
         }
-        else if (movementController.lastMovingDirection == "up")
+
+        /*else if (movementController.lastMovingDirection == "up")
         {
             animator.SetInteger("Direction", 1);
         }
@@ -82,8 +83,8 @@ public class PlayerController : MonoBehaviour
             
             flipY = true;
         }
-
-        sprite.flipY = flipY;
+        */
+       // sprite.flipY = flipY;
         sprite.flipX = flipX;
     }
 

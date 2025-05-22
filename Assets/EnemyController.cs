@@ -534,7 +534,7 @@ public class EnemyController : MonoBehaviour
                 // Можно проиграть звук убийства монстра, если нужно:
                 // PlaySound(sounds[0]);
                 StartCoroutine(RespawnRandomGhost());
-                Die();
+                //Die();
             }
             else
             {
@@ -557,6 +557,7 @@ public class EnemyController : MonoBehaviour
                     playerController.DieFromMonster();
                 }
                 StartCoroutine(ShowLoseWindowWithDelay());
+
             }
         }
     }
@@ -569,23 +570,49 @@ public class EnemyController : MonoBehaviour
 
 
 
-    /*
+
     public IEnumerator RespawnSimpleGhost()
     {
-        gameObject.SetActive(false);
-        // 1. Ждем 2 секунды
+        // Сохраняем позицию для спавна
+        Vector3 spawnPos = ghostNodeCenter != null ?
+            ghostNodeCenter.transform.position :
+            transform.position;
+
+        // Отключаем визуал и коллайдеры
+        SetActiveComponents(false);
+
         yield return new WaitForSeconds(2f);
 
-        // 2. Спавним упрощенного монстра
-        GameObject newGhost = Instantiate(
-            gameManager.simpleGhostPrefab,
-            Vector3.zero,
-            Quaternion.identity
-        );
+        if (gameManager != null && gameManager.simpleGhostPrefab != null)
+        {
+            GameObject newGhost = Instantiate(
+                gameManager.simpleGhostPrefab,
+                spawnPos,
+                Quaternion.identity
+            );
 
-        // 3. Уничтожаем старый объект
+            // Настраиваем нового монстра
+            if (newGhost != null)
+            {
+                EnemyController newController = newGhost.GetComponent<EnemyController>();
+                if (newController != null)
+                {
+                    newController.movementController.currentNode = ghostNodeCenter;
+                    newController.ghostNodeState = GhostNodeStatesEnum.movingInNodes;
+                }
+            }
+        }
+
         Destroy(gameObject);
-    }*/
+    }
+
+    private void SetActiveComponents(bool active)
+    {
+        foreach (var renderer in GetComponentsInChildren<Renderer>())
+            renderer.enabled = active;
+        foreach (var collider in GetComponentsInChildren<Collider2D>())
+            collider.enabled = active;
+    }
 
 
     public IEnumerator RespawnRandomGhost()
@@ -677,6 +704,7 @@ public class EnemyController : MonoBehaviour
         if (gameManager.loserWindowByMonster != null)
         {
             gameManager.loserWindowByMonster.SetActive(true);
+            Time.timeScale = 0;
         }
     }
 

@@ -141,6 +141,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -418,7 +431,19 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_0": -2827553638929966838
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_1": -4151767858698638518
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_10": 8810699112777427695
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_11": -4386701831289285679
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_2": -8029081691821774093
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_3": 8363776598634188948
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_4": -8560204351656252366
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_5": 4431338955337240868
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_6": 2437505351929511191
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_7": -3749257528219762143
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_8": 6804274298218990109
+      "\u043F\u0435\u0441\u043E\u0447\u043D\u044B\u0439 \u0441\u043C\u0435\u0440\u0442\u044C \u043A\u0430\u0434\u0440 5_9": 8764155371276168695
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

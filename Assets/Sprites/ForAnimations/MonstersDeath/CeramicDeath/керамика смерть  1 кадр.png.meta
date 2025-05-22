@@ -133,6 +133,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -366,7 +379,17 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "\u043A\u0435\u0440\u0430\u043C\u0438\u043A\u0430 \u0441\u043C\u0435\u0440\u0442\u044C  1 \u043A\u0430\u0434\u0440_0": -6353624155679717334
+      "\u043A\u0435\u0440\u0430\u043C\u0438\u043A\u0430 \u0441\u043C\u0435\u0440\u0442\u044C  1 \u043A\u0430\u0434\u0440_1": 6836936121139986971
+      "\u043A\u0435\u0440\u0430\u043C\u0438\u043A\u0430 \u0441\u043C\u0435\u0440\u0442\u044C  1 \u043A\u0430\u0434\u0440_2": -8026387241430777526
+      "\u043A\u0435\u0440\u0430\u043C\u0438\u043A\u0430 \u0441\u043C\u0435\u0440\u0442\u044C  1 \u043A\u0430\u0434\u0440_3": 1026669370949021799
+      "\u043A\u0435\u0440\u0430\u043C\u0438\u043A\u0430 \u0441\u043C\u0435\u0440\u0442\u044C  1 \u043A\u0430\u0434\u0440_4": 7609879491692077829
+      "\u043A\u0435\u0440\u0430\u043C\u0438\u043A\u0430 \u0441\u043C\u0435\u0440\u0442\u044C  1 \u043A\u0430\u0434\u0440_5": 6824740049111044879
+      "\u043A\u0435\u0440\u0430\u043C\u0438\u043A\u0430 \u0441\u043C\u0435\u0440\u0442\u044C  1 \u043A\u0430\u0434\u0440_6": -804406942181519826
+      "\u043A\u0435\u0440\u0430\u043C\u0438\u043A\u0430 \u0441\u043C\u0435\u0440\u0442\u044C  1 \u043A\u0430\u0434\u0440_7": -5181083104026456234
+      "\u043A\u0435\u0440\u0430\u043C\u0438\u043A\u0430 \u0441\u043C\u0435\u0440\u0442\u044C  1 \u043A\u0430\u0434\u0440_8": 7320462081114771805
+      "\u043A\u0435\u0440\u0430\u043C\u0438\u043A\u0430 \u0441\u043C\u0435\u0440\u0442\u044C  1 \u043A\u0430\u0434\u0440_9": 8949450435610898909
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
