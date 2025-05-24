@@ -208,6 +208,10 @@ public class EssenceManager : MonoBehaviour
     private void ActivateEssenceEffect(EssenceColor color)
     {
         Debug.Log("ActivateEssenceEffect вызван для " + color);
+
+        // Отключаем все эффекты перед активацией нового
+        DisableAllEssenceEffects();
+
         GameObject effect = null;
         switch (color)
         {
@@ -232,6 +236,17 @@ public class EssenceManager : MonoBehaviour
                 animator.SetTrigger("PlayEffect");
             }
         }
+    }
+
+    // Добавьте этот метод в класс EssenceManager:
+    private void DisableAllEssenceEffects()
+    {
+        orangeEffect?.SetActive(false);
+        greenEffect?.SetActive(false);
+        purpleEffect?.SetActive(false);
+        burgundyEffect?.SetActive(false);
+        mustardEffect?.SetActive(false);
+        murenaEffect?.SetActive(false);
     }
 
     private void DisableEssenceEffect(EssenceColor color)
