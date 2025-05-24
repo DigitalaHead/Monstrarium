@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Security.Permissions;
 using System.Threading;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public class MovementController : MonoBehaviour
 {
+    private float baseSpeed;
+    private float currentSpeed;
+
     public GameManager gameManager;
     public GameObject currentNode;
     public float speed = 200f;
@@ -18,7 +23,32 @@ public class MovementController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        baseSpeed = speed; // Сохраняем изначальную скорость
+        currentSpeed = baseSpeed;
+
+        // Подписываемся на событие только если у объекта тег "Enemy"
+        if (gameObject.CompareTag("Enemy"))
+        {
+            GameManager.OnSpeedIncreased += UpdateSpeed;
+        }
+
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+    }
+
+    private void OnDestroy()
+    {
+        // Отписываемся при уничтожении объекта
+        if (gameObject.CompareTag("Enemy"))
+        {
+            GameManager.OnSpeedIncreased -= UpdateSpeed;
+        }
+    }
+
+    private void UpdateSpeed(float multiplier)
+    {
+        currentSpeed = baseSpeed * multiplier;
+        speed = currentSpeed; // Применяем новую скорость
+        Debug.Log($"Скорость {gameObject.name} изменена: {speed}");
     }
 
     // Update is called once per frame

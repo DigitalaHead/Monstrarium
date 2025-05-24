@@ -6,9 +6,21 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using MonsterType = EnemyController.MonsterType;
 using Debug = UnityEngine.Debug;
+using TMPro;
 
 public class GameManager : Sounds
 {
+    public TextMeshProUGUI timerText;
+    private float elapsedTime = 0f;
+    private bool isTimerRunning = true;
+
+    public static event Action<float> OnSpeedIncreased; // Событие для изменения скорости
+    private int minutesPassed = 0;
+
+    public GameObject minuteMessageObject; // Ссылка на GameObject с текстом (добавьте в инспекторе)
+    public float messageDisplayTime = 5f; // Время показа сообщения в секундах
+
+
     public GameObject leftWarpNode;
     public GameObject rightWarpNode;
 
@@ -128,11 +140,11 @@ public class GameManager : Sounds
     // Метод для выхода в главное меню
     public void ExitMenu()
     {
-        if (menu!= null)
-            {
-                menu.SetActive(true); // Активируем окно победы
-                Time.timeScale = 0; // Останавливаем время в игре
-            }
+        if (menu != null)
+        {
+            menu.SetActive(true); // Активируем окно победы
+            Time.timeScale = 0; // Останавливаем время в игре
+        }
     }
 
     public void ShowGameOverMenu(bool playerWins)
@@ -216,15 +228,73 @@ public class GameManager : Sounds
         Debug.Log("Игра продолжена, монстры сброшены.");
     }
 
-   /* void Awake()
-    {
-        
-        currentGhostMode = GhostMode.chase;
-        ghostNodeStart.GetComponent<NodeController>().isGhostStartingNode = true;
-    }*/
+    /* void Awake()
+     {
+
+         currentGhostMode = GhostMode.chase;
+         ghostNodeStart.GetComponent<NodeController>().isGhostStartingNode = true;
+     }*/
 
     void Update()
     {
-        
+        if (isTimerRunning)
+        {
+            elapsedTime += Time.deltaTime;
+            UpdateTimerDisplay();
+        }
+
+    }
+
+    private void UpdateTimerDisplay()
+    {
+        int minutes = Mathf.FloorToInt(elapsedTime / 60f);
+        int seconds = Mathf.FloorToInt(elapsedTime % 60f);
+        if (minutes > minutesPassed)
+        {
+            minutesPassed = minutes;
+            IncreaseMonstersSpeed(); // Увеличиваем скорость каждую минуту
+            ShowMinuteMessage();
+        }
+        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+    // Метод для остановки таймера (например, при победе/поражении)
+    public void StopTimer()
+    {
+        isTimerRunning = false;
+    }
+
+    // Метод для сброса таймера (при рестарте уровня)
+    public void ResetTimer()
+    {
+        elapsedTime = 0f;
+        isTimerRunning = true;
+        UpdateTimerDisplay();
+    }
+
+    private void IncreaseMonstersSpeed()
+    {
+        float newSpeedMultiplier = 1.0f + (minutesPassed * 0.05f); // +5% скорости каждую минуту
+        OnSpeedIncreased?.Invoke(newSpeedMultiplier); // Вызываем событие
+    }
+
+    private void ShowMinuteMessage()
+    {
+        if (minuteMessageObject != null)
+        {
+            StartCoroutine(DisplayMessageCoroutine());
+        }
+    }
+
+    private IEnumerator DisplayMessageCoroutine()
+    {
+        minuteMessageObject.SetActive(true);
+
+        // Можно добавить изменение текста, например:
+        // minuteMessageObject.GetComponent<TMP_Text>().text = $"Прошло {minutesPassed} минут!";
+
+        yield return new WaitForSeconds(messageDisplayTime);
+
+        minuteMessageObject.SetActive(false);
     }
 }
