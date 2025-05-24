@@ -13,6 +13,8 @@ public class EssenceUI : MonoBehaviour
 
     private void Start()
     {
+        ScoreController.score = 0; // Сброс текущего счета при запуске
+
         essenceCheckmarks = FindObjectsOfType<EssenceCheckmark>();
 
         if (essenceManager != null)
