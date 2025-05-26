@@ -38,6 +38,8 @@ public class EssenceManager : MonoBehaviour
     private float shieldTimer = 0f;
     public bool IsShieldActive => shieldActive;
 
+    public TMPro.TextMeshProUGUI shieldTimerText;
+
     void Start()
     {
         essenceSpawner = FindFirstObjectByType<EssenceSpawner>();
@@ -52,9 +54,20 @@ public class EssenceManager : MonoBehaviour
             if (shieldTimer <= 0f)
             {
                 shieldActive = false;
+                shieldTimer = 0f;
                 Debug.Log("Щит закончился!");
                 // Здесь можно отключить визуальный эффект щита, если есть
             }
+        }
+
+        // Показываем обратный отсчёт на экране
+        if (shieldTimerText != null)
+        {
+            shieldTimerText.gameObject.SetActive(shieldActive);
+            if (shieldActive)
+                shieldTimerText.text = "Время щита: " + Mathf.CeilToInt(shieldTimer).ToString();
+            else
+                shieldTimerText.text = "";
         }
     }
 
