@@ -69,6 +69,8 @@ public class EnemyController : MonoBehaviour
 
     public SpriteRenderer sprite;
 
+    private bool _deathSoundPlayed = false;
+
     void Awake()
     {
         animator = GetComponentInChildren<Animator>();
@@ -538,29 +540,38 @@ public class EnemyController : MonoBehaviour
             }
             else
             {
-                if (audioManager == null)
-                {
-                    audioManager = FindObjectOfType<AudioManager>();
-                }
-                if (audioManager != null && audioManager.deathPlayer != null)
-                {
-                    audioManager.PlaySFX(audioManager.deathPlayer);
-                }
-                else
-                {
-                    Debug.LogWarning("AudioManager или звук deathPlayer не найден!");
-                }
 
                 PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
-                if (playerController != null && !playerController.IsDead)
+                if (playerController != null && !playerController.Dead)
                 {
-                    playerController.DieFromMonster();
-                }
-                StartCoroutine(ShowLoseWindowWithDelay());
 
+                    if (audioManager == null)
+                    {
+                        audioManager = FindObjectOfType<AudioManager>();
+                    }
+                    if (audioManager != null && audioManager.deathPlayer != null)
+                    {
+                        audioManager.PlaySFX(audioManager.deathPlayer);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("AudioManager или звук deathPlayer не найден!");
+                    }
+
+
+                    if (playerController != null && !playerController.IsDead)
+                    {
+                        playerController.DieFromMonster();
+                    }
+
+                    playerController.KilledByMonster();
+                    StartCoroutine(ShowLoseWindowWithDelay());
+                }
             }
         }
     }
+
+
 
     public IEnumerator RespawnGhost()
     {
