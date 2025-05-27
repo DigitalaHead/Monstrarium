@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,6 +13,9 @@ public class PlayerController : MonoBehaviour
     public Sprite deadBodySprite; // Лежачий спрайт героя
     public GameObject spiritPrefab; // Префаб духа (с нужным спрайтом)
     public Vector3 spiritOffset = Vector3.zero; // Смещение духа относительно тела (обычно (0,0,0))
+
+    private BoxCollider2D playerCollider;
+    public bool Dead { get; private set; }
 
     private bool isDead = false;
 
@@ -62,7 +67,7 @@ public class PlayerController : MonoBehaviour
 
         bool flipX = false;
         bool flipY = false;
-        if (movementController.lastMovingDirection == "right") 
+        if (movementController.lastMovingDirection == "right")
         {
             animator.SetInteger("Direction", 0);
         }
@@ -84,7 +89,7 @@ public class PlayerController : MonoBehaviour
             flipY = true;
         }
         */
-       // sprite.flipY = flipY;
+        // sprite.flipY = flipY;
         sprite.flipX = flipX;
     }
 
@@ -97,7 +102,7 @@ public class PlayerController : MonoBehaviour
 
             if (essenceManager != null)
             {
-               
+
                 essenceManager.CollectEssence(essence.CreateEssence(), collision.gameObject);
             }
         }
@@ -124,6 +129,22 @@ public class PlayerController : MonoBehaviour
         this.enabled = false;
     }
 
+    public void KilledByMonster()
+    {
+        if (Dead) return; // Чтобы не срабатывало дважды
+
+        Dead = true;
+
+        // Отключаем коллайдер, чтобы монстры больше не сталкивались с игроком
+        if (playerCollider != null)
+        {
+            playerCollider.enabled = false;
+        }
+
+        // Дополнительно: можно добавить анимацию смерти, эффекты и т.д.
+        Debug.Log("Игрок умер!");
+    }
+
     private IEnumerator DeathSequence()
     {
         // 1. Меняем спрайт героя на лежачий
@@ -147,7 +168,7 @@ public class PlayerController : MonoBehaviour
         if (spirit != null)
         {
             Vector3 start = spirit.transform.position;
-            Vector3 end = start + new Vector3(0, 150f, 0); 
+            Vector3 end = start + new Vector3(0, 150f, 0);
             float duration = 3f; // <-- теперь 3 секунды
             float elapsed = 0f;
             while (elapsed < duration)
@@ -215,7 +236,7 @@ public class PlayerController : MonoBehaviour
             }
             spirit.transform.position = end;
         }
-        
+
         // Показываем меню поражения
         GameManager gameManager = FindFirstObjectByType<GameManager>();
         if (gameManager != null && gameManager.loserWindowByIncorrectEssence != null)
