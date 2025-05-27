@@ -536,7 +536,7 @@ public class EnemyController : MonoBehaviour
                 // Можно проиграть звук убийства монстра, если нужно:
                 // PlaySound(sounds[0]);
                 StartCoroutine(RespawnRandomGhost());
-                //Die();
+                Die();
             }
             else
             {
@@ -734,6 +734,6 @@ public class EnemyController : MonoBehaviour
             col.enabled = false;
 
         // Удалить объект после проигрывания анимации (например, через 0.6 сек)
-        Destroy(gameObject, 1.2f);
+        //Destroy(gameObject, 1.2f);
     }
 }
