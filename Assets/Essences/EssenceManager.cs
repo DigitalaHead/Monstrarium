@@ -194,6 +194,10 @@ public class EssenceManager : MonoBehaviour
         }
 
         return false;
+        
+
+        OnEssenceChanged?.Invoke();
+        return true;
     }
 
     private EssenceColor GetEssenceForMonster(EnemyController.MonsterType monsterType)
