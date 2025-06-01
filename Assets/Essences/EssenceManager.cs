@@ -65,7 +65,7 @@ public class EssenceManager : MonoBehaviour
         {
             shieldTimerText.gameObject.SetActive(shieldActive);
             if (shieldActive)
-                shieldTimerText.text = "Время щита: " + Mathf.CeilToInt(shieldTimer).ToString();
+                shieldTimerText.text = Mathf.CeilToInt(shieldTimer).ToString() + " сек.";
             else
                 shieldTimerText.text = "";
         }
@@ -93,6 +93,22 @@ public class EssenceManager : MonoBehaviour
             OnEssenceChanged?.Invoke();
             return;
         }
+
+        // --- БЛОК ПРОВЕРКИ ДЛЯ ПРОМЕЖУТОЧНЫХ ЗЕЛИЙ ---
+        // Если есть промежуточное зелье, разрешаем только нужную эссенцию
+        if (
+            (essenceCounts[EssenceColor.Orange] > 0 && essence.color != EssenceColor.Red) ||
+            (essenceCounts[EssenceColor.Green] > 0 && essence.color != EssenceColor.Blue) ||
+            (essenceCounts[EssenceColor.Purple] > 0 && essence.color != EssenceColor.Yellow)
+        )
+        {
+            Debug.Log("Можно собрать только нужную эссенцию для сложного зелья!");
+            if (player != null && !player.IsDead)
+                player.DieFromWrongEssence();
+            return;
+        }
+        // --- КОНЕЦ БЛОКА ПРОВЕРКИ ---
+
         // Проверяем, есть ли у игрока сложное зелье (бордовое, горчичное или мурена)
         if (essenceCounts[EssenceColor.Burgundy] > 0 || 
             essenceCounts[EssenceColor.Mustard] > 0 || 
@@ -174,7 +190,7 @@ public class EssenceManager : MonoBehaviour
 
     public bool TryKillMonster(EnemyController.MonsterType monsterType)
     {
-        EssenceColor requiredEssence = GetEssenceForMonster(monsterType);
+        /*EssenceColor requiredEssence = GetEssenceForMonster(monsterType);
 
         if (essenceCounts[requiredEssence] > 0)
         {
@@ -194,7 +210,7 @@ public class EssenceManager : MonoBehaviour
         }
 
         return false;
-        
+        */
 
         OnEssenceChanged?.Invoke();
         return true;

@@ -739,6 +739,7 @@ public class EnemyController : MonoBehaviour
         if (col != null)
             col.enabled = false;
 
-        // Destroy(gameObject, 2f); // Временно закомментируйте
+        // Запускаем респавн
+        StartCoroutine(RespawnRandomGhost());
     }
 }
