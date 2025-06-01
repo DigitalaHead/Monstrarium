@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Cache;
 using System.Security.Cryptography;
 using UnityEngine;
+using YG;
 using Debug = UnityEngine.Debug;
 
 public class EnemyController : MonoBehaviour
@@ -720,6 +721,7 @@ public class EnemyController : MonoBehaviour
         {
             gameManager.loserWindowByMonster.SetActive(true);
             Time.timeScale = 0;
+            YG2.InterstitialAdvShow(); // Показываем рекламу
         }
     }
 

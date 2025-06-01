@@ -174,7 +174,7 @@ public class EssenceManager : MonoBehaviour
 
     public bool TryKillMonster(EnemyController.MonsterType monsterType)
     {
-        /*EssenceColor requiredEssence = GetEssenceForMonster(monsterType);
+        EssenceColor requiredEssence = GetEssenceForMonster(monsterType);
 
         if (essenceCounts[requiredEssence] > 0)
         {
@@ -193,7 +193,7 @@ public class EssenceManager : MonoBehaviour
             return true;
         }
 
-        return false;*/
+        return false;
         
 
         OnEssenceChanged?.Invoke();

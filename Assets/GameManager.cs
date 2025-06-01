@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using MonsterType = EnemyController.MonsterType;
 using Debug = UnityEngine.Debug;
 using TMPro;
+using YG;
 
 public class GameManager : Sounds
 {
@@ -169,6 +170,7 @@ public class GameManager : Sounds
             {
                 loserWindowByMonster.SetActive(true); // Активируем окно поражения
                 Time.timeScale = 0; // Останавливаем время в игре
+                YG2.InterstitialAdvShow();
             }
             else
             {

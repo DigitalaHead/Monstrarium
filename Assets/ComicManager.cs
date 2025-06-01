@@ -14,7 +14,7 @@ public class ComicManager : MonoBehaviour
     void Start()
     {
         Debug.Log(PlayerPrefs.GetInt("ComicShown", 0));
-      //  PlayerPrefs.SetInt("ComicShown", 0); // Сброс для тестирования, удалить в релизе
+        //PlayerPrefs.SetInt("ComicShown", 0); // Сброс для тестирования, удалить в релизе
         if (PlayerPrefs.GetInt("ComicShown", 0) == 0)
         {
             comicPanel.SetActive(true);
