@@ -10,6 +10,7 @@ public class ComicManager : MonoBehaviour
     private int currentIndex = 0;
     private bool comicActive = false;
     private bool tutorialActive = false;
+    private bool lastSlideActive = false; // Новый флаг
 
     void Start()
     {
@@ -37,9 +38,13 @@ public class ComicManager : MonoBehaviour
         {
             NextComicImage();
         }
-        else if (tutorialActive && Input.anyKeyDown)
+        else if (tutorialActive && Input.anyKeyDown && !lastSlideActive)
         {
             NextTutorialObject();
+        }
+        else if (lastSlideActive && Input.anyKeyDown)
+        {
+            CloseAll();
         }
     }
 
@@ -59,6 +64,9 @@ public class ComicManager : MonoBehaviour
         // Скрыть все comicImages
         foreach (var img in comicImages)
             img.gameObject.SetActive(false);
+
+        // Проверяем, последний ли это слайд
+        lastSlideActive = (index == tutorialObjects.Length - 1);
     }
 
     void NextComicImage()
@@ -80,15 +88,13 @@ public class ComicManager : MonoBehaviour
 
     void NextTutorialObject()
     {
-        currentIndex++;
-        if (currentIndex < tutorialObjects.Length)
+        if (currentIndex < tutorialObjects.Length - 1)
         {
+            currentIndex++;
             ShowTutorialObject(currentIndex);
+            lastSlideActive = (currentIndex == tutorialObjects.Length - 1);
         }
-        else
-        {
-            CloseAll();
-        }
+        // Если уже последний слайд, просто ждём нажатия для CloseAll() в Update
     }
 
     void CloseAll()
@@ -99,5 +105,6 @@ public class ComicManager : MonoBehaviour
         PlayerPrefs.Save();
         comicActive = false;
         tutorialActive = false;
+        lastSlideActive = false; // сбрасываем флаг
     }
 }
