@@ -54,6 +54,17 @@ public class MovementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // --- ДОБАВЛЕНО: управление WASD ---
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+            SetDirection("left");
+        else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+            SetDirection("right");
+        else if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+            SetDirection("up");
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+            SetDirection("down");
+        // --- КОНЕЦ ДОБАВЛЕНИЯ ---
+
         if (currentNode == null)
         {
             Debug.LogError("currentNode не назначен в MovementController.");

@@ -29,8 +29,6 @@ public class EssenceSpawner : MonoBehaviour
     [SerializeField]
     private float shieldSpawnInterval = 60f;
 
-    private GameObject currentShieldEssence;
-
     [SerializeField]
     private Transform shieldSpawnPoint;
 

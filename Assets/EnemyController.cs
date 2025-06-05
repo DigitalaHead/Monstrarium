@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Cache;
 using System.Security.Cryptography;
 using UnityEngine;
+using YG;
 using Debug = UnityEngine.Debug;
 
 public class EnemyController : MonoBehaviour
@@ -535,8 +536,10 @@ public class EnemyController : MonoBehaviour
                 Debug.Log($"Монстр {monsterType} убит!");
                 // Можно проиграть звук убийства монстра, если нужно:
                 // PlaySound(sounds[0]);
-                StartCoroutine(RespawnRandomGhost());
+
+                //StartCoroutine(RespawnRandomGhost());
                 Die();
+                
             }
             else
             {
@@ -582,8 +585,9 @@ public class EnemyController : MonoBehaviour
 
 
 
-    public IEnumerator RespawnSimpleGhost()
+   /* public IEnumerator RespawnSimpleGhost()
     {
+        Debug.Log("SimpleGhost");
         // Сохраняем позицию для спавна
         Vector3 spawnPos = ghostNodeCenter != null ?
             ghostNodeCenter.transform.position :
@@ -614,8 +618,8 @@ public class EnemyController : MonoBehaviour
             }
         }
 
-        Destroy(gameObject);
-    }
+        Die();
+    }*/
 
     private void SetActiveComponents(bool active)
     {
@@ -646,6 +650,7 @@ public class EnemyController : MonoBehaviour
             Debug.LogWarning("AudioManager или звук deathPlayer не найден!");
         }
 
+        
         // 2. Отключаем ВСЕ SpriteRenderer и Collider2D (включая дочерние объекты)
         SpriteRenderer[] spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         Collider2D[] colliders = GetComponentsInChildren<Collider2D>(true);
@@ -716,24 +721,25 @@ public class EnemyController : MonoBehaviour
         {
             gameManager.loserWindowByMonster.SetActive(true);
             Time.timeScale = 0;
+            YG2.InterstitialAdvShow(); // Показываем рекламу
         }
     }
 
     public void Die()
     {
-        Animator animator = GetComponent<Animator>();
+        Debug.Log("DIE вызван");
+        Animator animator = GetComponentInChildren<Animator>();
         if (animator != null)
         {
             animator.SetTrigger("die");
         }
-        // Отключить движение, коллайдер и т.п.
         if (movementController != null)
             movementController.enabled = false;
         Collider2D col = GetComponent<Collider2D>();
         if (col != null)
             col.enabled = false;
 
-        // Удалить объект после проигрывания анимации (например, через 0.6 сек)
-        //Destroy(gameObject, 1.2f);
+        // Запускаем респавн
+        StartCoroutine(RespawnRandomGhost());
     }
 }

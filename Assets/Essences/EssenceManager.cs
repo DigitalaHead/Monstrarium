@@ -38,6 +38,8 @@ public class EssenceManager : MonoBehaviour
     private float shieldTimer = 0f;
     public bool IsShieldActive => shieldActive;
 
+    public TMPro.TextMeshProUGUI shieldTimerText;
+
     void Start()
     {
         essenceSpawner = FindFirstObjectByType<EssenceSpawner>();
@@ -52,9 +54,20 @@ public class EssenceManager : MonoBehaviour
             if (shieldTimer <= 0f)
             {
                 shieldActive = false;
+                shieldTimer = 0f;
                 Debug.Log("Щит закончился!");
                 // Здесь можно отключить визуальный эффект щита, если есть
             }
+        }
+
+        // Показываем обратный отсчёт на экране
+        if (shieldTimerText != null)
+        {
+            shieldTimerText.gameObject.SetActive(shieldActive);
+            if (shieldActive)
+                shieldTimerText.text = Mathf.CeilToInt(shieldTimer).ToString() + " сек.";
+            else
+                shieldTimerText.text = "";
         }
     }
 
@@ -80,6 +93,22 @@ public class EssenceManager : MonoBehaviour
             OnEssenceChanged?.Invoke();
             return;
         }
+
+        // --- БЛОК ПРОВЕРКИ ДЛЯ ПРОМЕЖУТОЧНЫХ ЗЕЛИЙ ---
+        // Если есть промежуточное зелье, разрешаем только нужную эссенцию
+        if (
+            (essenceCounts[EssenceColor.Orange] > 0 && essence.color != EssenceColor.Red) ||
+            (essenceCounts[EssenceColor.Green] > 0 && essence.color != EssenceColor.Blue) ||
+            (essenceCounts[EssenceColor.Purple] > 0 && essence.color != EssenceColor.Yellow)
+        )
+        {
+            Debug.Log("Можно собрать только нужную эссенцию для сложного зелья!");
+            if (player != null && !player.IsDead)
+                player.DieFromWrongEssence();
+            return;
+        }
+        // --- КОНЕЦ БЛОКА ПРОВЕРКИ ---
+
         // Проверяем, есть ли у игрока сложное зелье (бордовое, горчичное или мурена)
         if (essenceCounts[EssenceColor.Burgundy] > 0 || 
             essenceCounts[EssenceColor.Mustard] > 0 || 
@@ -181,6 +210,10 @@ public class EssenceManager : MonoBehaviour
         }
 
         return false;
+        
+
+        OnEssenceChanged?.Invoke();
+        return true;
     }
 
     private EssenceColor GetEssenceForMonster(EnemyController.MonsterType monsterType)
@@ -208,6 +241,10 @@ public class EssenceManager : MonoBehaviour
     private void ActivateEssenceEffect(EssenceColor color)
     {
         Debug.Log("ActivateEssenceEffect вызван для " + color);
+
+        // Отключаем все эффекты перед активацией нового
+        DisableAllEssenceEffects();
+
         GameObject effect = null;
         switch (color)
         {
@@ -232,6 +269,17 @@ public class EssenceManager : MonoBehaviour
                 animator.SetTrigger("PlayEffect");
             }
         }
+    }
+
+    // Добавьте этот метод в класс EssenceManager:
+    private void DisableAllEssenceEffects()
+    {
+        orangeEffect?.SetActive(false);
+        greenEffect?.SetActive(false);
+        purpleEffect?.SetActive(false);
+        burgundyEffect?.SetActive(false);
+        mustardEffect?.SetActive(false);
+        murenaEffect?.SetActive(false);
     }
 
     private void DisableEssenceEffect(EssenceColor color)

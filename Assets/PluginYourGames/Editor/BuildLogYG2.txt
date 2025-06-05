@@ -1,0 +1,3 @@
+Build path: D:/unity/builds
+Build number: 6
+PluginYG version: 2.0032
